@@ -1,12 +1,14 @@
 import { useHourlyContent } from "@/hooks/useHourlyContent";
-import { RefreshCw, Share2, Moon, Sun } from "lucide-react";
+import { RefreshCw, Share2, Moon, Sun, Smartphone } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
 
 const Index = () => {
   const { verse, hadith, refresh } = useHourlyContent();
   const [isDark, setIsDark] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", isDark);
@@ -125,8 +127,17 @@ const Index = () => {
       </main>
 
       {/* Footer */}
-      <footer className="text-center py-4 text-xs text-muted-foreground relative z-10">
-        Her saat başı güncellenir
+      <footer className="text-center py-4 relative z-10">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate("/install")}
+          className="text-xs text-muted-foreground gap-1.5 hover:text-foreground"
+        >
+          <Smartphone className="h-3.5 w-3.5" />
+          iPhone'a Kur
+        </Button>
+        <p className="text-xs text-muted-foreground mt-1">Her saat başı güncellenir</p>
       </footer>
     </div>
   );
