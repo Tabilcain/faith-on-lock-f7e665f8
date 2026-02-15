@@ -21,13 +21,26 @@ export async function loadAllHadiths(): Promise<Hadith[]> {
         return res.json();
       })
       .then((data: RawHadith[]) => {
-        cachedHadiths = data.map((h) => ({
+        // Client-side quality filtering
+        const filtered = data.filter((h) => {
+          const t = h.text;
+          if (!t || t.length < 40 || t.length > 450) return false;
+          // Yarım kalan madde numaralarını filtrele (ör: "3." ile biten)
+          if (/\d\.\s*$/.test(t)) return false;
+          // Anlamsız kalıntıları filtrele
+          if (/BÖLÜM[ÜU]\s+B[İI]TT[İI]/i.test(t)) return false;
+          if (/باب:/i.test(t)) return false;
+          // Tam cümle kontrolü
+          if (!/[.!?"\u201D]$/.test(t)) return false;
+          return true;
+        });
+        cachedHadiths = filtered.map((h) => ({
           arabic: "",
           turkish: h.text,
           source: h.source,
           book: h.bookName,
         }));
-        console.log(`Loaded ${cachedHadiths.length} hadiths from hadiths.json`);
+        console.log(`Loaded ${cachedHadiths.length} hadiths from hadiths.json (filtered from ${data.length})`);
         loadingPromise = null;
         return cachedHadiths;
       })
