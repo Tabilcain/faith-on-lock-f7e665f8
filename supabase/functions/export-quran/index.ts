@@ -97,20 +97,111 @@ async function fetchEdition(edition: string): Promise<RawEdition> {
   throw new Error(`Failed to fetch ${edition}`);
 }
 
-function selectHadiths(edition: RawEdition, source: string, targetCount: number) {
-  const hadiths = edition.hadiths.filter(h => h.text && h.text.trim().length > 30 && !h.text.startsWith("AÇIKLAMALAR"));
-  const sections = edition.metadata.sections;
-  const sectionKeys = Object.keys(sections).filter(k => k !== "0");
-  const perSection = Math.max(1, Math.ceil(targetCount / sectionKeys.length));
+function cleanHadithText(text: string): string | null {
+  // 1. Sened kesme - Rasulullah/Nebi kalıplarını bul, sonrasını al
+  const senedPatterns = [
+    /(?:Res[uû]l[uü]llah|Ras[uû]l[uü]llah|Res[uû]l-i Ekrem|Nebî|Nebi|Hz\.\s*Peygamber|Peygamber(?:imiz)?)\s*\(?\s*(?:s\.?a\.?v\.?|sallallah[uü]\s*aleyhi\s*ve\s*sellem)?\s*\)?\s*(?:şöyle\s+)?(?:buyurdu|dedi|söyledi|emretti|buyurmuştur|demiştir|söylemiştir)(?:\s*ki)?[:\s]+/i,
+    /(?:Res[uû]l[uü]llah|Ras[uû]l[uü]llah|Nebî|Nebi)\s*\(?\s*(?:s\.?a\.?v\.?)?\s*\)?\s*[:]\s*/i,
+  ];
 
-  const bySection: Record<number, RawHadith[]> = {};
-  for (const h of hadiths) {
-    const book = h.reference?.book || 0;
-    if (!bySection[book]) bySection[book] = [];
-    bySection[book].push(h);
+  let cleaned = text;
+  let found = false;
+
+  for (const pattern of senedPatterns) {
+    const match = cleaned.match(pattern);
+    if (match && match.index !== undefined) {
+      cleaned = cleaned.substring(match.index + match[0].length);
+      found = true;
+      break;
+    }
   }
 
-  const selected: Array<{ id: number; text: string; source: string; book: number; bookName: string }> = [];
+  // Eğer hiçbir kalıp bulunamazsa, bu hadisi atla
+  if (!found) return null;
+
+  // 2. Gereksiz ekleri temizle
+  cleaned = cleaned.replace(/Tekrar[ıi]?\s*:.*$/s, "");
+  cleaned = cleaned.replace(/Di[gğ]er\s+[Tt]ahric.*$/s, "");
+  cleaned = cleaned.replace(/[İI]ZAH[İI]\s+[İI]Ç[İI]N.*$/s, "");
+  cleaned = cleaned.replace(/AÇIKLAMA.*$/s, "");
+  cleaned = cleaned.replace(/Not\s*:.*$/s, "");
+  cleaned = cleaned.replace(/BÖLÜM[ÜU]\s+B[İI]TT[İI].*$/s, "");
+  cleaned = cleaned.replace(/\[-?\d+-?\]/g, "");
+  cleaned = cleaned.replace(/باب:.*$/s, "");
+  cleaned = cleaned.replace(/\(Yani\s+.*?\)/g, "");
+  cleaned = cleaned.replace(/\[\d+\]/g, "");
+  cleaned = cleaned.replace(/\s+/g, " ").trim();
+
+  // 3. Baş harfi büyük yap
+  if (cleaned.length > 0) {
+    cleaned = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+  }
+
+  // 4. Tırnak/parantez düzeltme
+  cleaned = cleaned.replace(/^["'"]+/, "").replace(/["'"]+$/, "").trim();
+
+  // 5. Uzunluk kontrolü
+  if (cleaned.length < 40 || cleaned.length > 450) return null;
+
+  // 6. Madde listesi formatındaki hadisleri ele — yarım kalan maddeleri atla  
+  // Metin sonunda "sayı." kalıbı varsa (ör: "3." veya ", 2.") bu hadisi tamamen atla
+  if (/\d\.\s*$/.test(cleaned)) return null;
+
+  // 7. Tam cümle kontrolü - nokta, soru işareti veya ünlem ile bitmeli
+  if (!/[.!?"]$/.test(cleaned)) {
+    const lastPeriod = cleaned.lastIndexOf(".");
+    if (lastPeriod > 40) {
+      cleaned = cleaned.substring(0, lastPeriod + 1);
+    } else {
+      return null;
+    }
+  }
+
+  // 8. Başında parantez veya anlamsız karakter varsa atla
+  if (/^\)/.test(cleaned)) {
+    cleaned = cleaned.replace(/^\)\s*/, "");
+  }
+
+  // 8. İçeriğinde anlamsız kalıntılar varsa atla
+  if (/Su görünce|diye sordular\.\s*$/.test(cleaned) && cleaned.length < 80) return null;
+
+  return cleaned;
+}
+
+function selectHadiths(edition: RawEdition, source: string, targetCount: number) {
+  const sections = edition.metadata.sections;
+  const sectionKeys = Object.keys(sections).filter(k => k !== "0");
+
+  // Tüm hadisleri temizle ve filtrele
+  const cleanedAll: Array<{ id: number; text: string; source: string; book: number; bookName: string }> = [];
+
+  for (const h of edition.hadiths) {
+    if (!h.text || h.text.trim().length < 30) continue;
+    if (h.text.startsWith("AÇIKLAMALAR")) continue;
+
+    const cleaned = cleanHadithText(h.text);
+    if (!cleaned) continue;
+
+    const bookNum = h.reference?.book || 0;
+    const bookKey = String(bookNum);
+    cleanedAll.push({
+      id: h.hadithnumber,
+      text: cleaned,
+      source,
+      book: bookNum,
+      bookName: sections[bookKey] || "",
+    });
+  }
+
+  // Kitaplara göre dağıt
+  const bySection: Record<number, typeof cleanedAll> = {};
+  for (const h of cleanedAll) {
+    if (!bySection[h.book]) bySection[h.book] = [];
+    bySection[h.book].push(h);
+  }
+
+  const perSection = Math.max(1, Math.ceil(targetCount / sectionKeys.length));
+  const selected: typeof cleanedAll = [];
 
   for (const sectionKey of sectionKeys) {
     const bookNum = parseInt(sectionKey);
@@ -120,15 +211,7 @@ function selectHadiths(edition: RawEdition, source: string, targetCount: number)
     const step = Math.max(1, Math.floor(sectionHadiths.length / perSection));
     let count = 0;
     for (let i = 0; i < sectionHadiths.length && count < perSection; i += step) {
-      const h = sectionHadiths[i];
-      if (h.text.length < 30) continue;
-      selected.push({
-        id: h.hadithnumber,
-        text: h.text,
-        source,
-        book: bookNum,
-        bookName: sections[sectionKey] || "",
-      });
+      selected.push(sectionHadiths[i]);
       count++;
     }
     if (selected.length >= targetCount) break;
