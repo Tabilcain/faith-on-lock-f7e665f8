@@ -1,36 +1,39 @@
 
 
-# 📿 Ayet & Hadis - Saatlik İslami İçerik Uygulaması
+# Ayet ve Hadis Veritabanini Genisletme Plani
 
-## Genel Bakış
-Her saat değişen Kuran ayeti ve hadis gösteren, iPhone ana ekranına kurulabilir minimal bir uygulama.
+## Mevcut Durum
+- **Ayetler:** 50 adet secme ayet (Kuran toplam 6236 ayet)
+- **Hadisler:** 30 adet (hedef: en az 360)
 
-## Özellikler
+## Yapilacaklar
 
-### 1. Ana Ekran - Ayet & Hadis Gösterimi
-- **Saatlik değişen ayet**: Kuran'dan rastgele bir ayet, Türkçe meal ile birlikte
-- **Saatlik değişen hadis**: Buhari ve Müslim'den seçme hadisler, Türkçe çeviri
-- **Sure adı ve ayet numarası** bilgisi
-- **Hadis kaynağı** bilgisi (Buhari/Müslim)
-- Arapça metin + Türkçe meal yan yana
+### 1. Kuran Ayetleri - Tam Kuran Verisi
+GitHub reposundaki (yazinsai/quran-validator) Kuran verisini kullanarak **tum 6236 ayeti** uygulamaya ekleyecegiz.
 
-### 2. Tasarım
-- Minimal, huzur veren tasarım (yumuşak renkler, İslami motifler)
-- Tam ekran, widget benzeri görünüm
-- Güzel tipografi (Arapça ve Türkçe için uygun fontlar)
-- Karanlık/aydınlık mod desteği
+- `src/data/verses.ts` dosyasi cok buyuyecegi icin, veriyi **JSON dosyasi** olarak `public/quran.json` seklinde tutacagiz
+- Her ayet icin: sure adi, sure numarasi, ayet numarasi, Arapca metin, Turkce meal
+- Turkce meal icin Diyanet meali kullanilacak
+- Uygulama acildiginda bu JSON'dan veri okunacak
 
-### 3. Ek Özellikler
-- **Paylaş butonu**: Günün ayetini/hadisini paylaşabilme
-- **Yenile butonu**: Manuel olarak yeni ayet/hadis getirebilme
-- **Otomatik geçiş**: Her saat başı otomatik güncelleme
+### 2. Hadisler - En Az 360 Hadis
+- `src/data/hadiths.ts` dosyasini genisletip **en az 360 hadis** ekleyecegiz
+- Buhari ve Muslim'den karisik, sahih hadisler
+- Her hadis icin: Arapca metin, Turkce ceviri, kaynak (Buhari/Muslim), kitap bilgisi
 
-### 4. PWA Kurulumu
-- iPhone ana ekranına "Ekle" özelliği
-- Offline çalışma desteği (tüm ayetler ve hadisler cihazda)
-- Uygulama ikonu ve splash screen
+### 3. Teknik Degisiklikler
+- **Veri yukleme:** Buyuk Kuran verisi icin `public/quran.json` dosyasi olusturulacak ve `useHourlyContent` hook'u bu JSON'dan veri cekecek sekilde guncellenecek
+- **Hadis verisi:** Hadis dosyasi buyuyecek ama yine statik TypeScript dosyasinda kalabilir (360 hadis makul boyut)
+- **PWA cache:** Offline calisma icin JSON dosyasi da cache'lenecek
 
-### 5. Veri Kaynakları
-- **Kuran ayetleri**: Paylaştığınız GitHub reposundan Türkçe mealli ayet verisi
-- **Hadisler**: Buhari ve Müslim'den seçme hadisler (uygulama içinde gömülü)
+### 4. Veri Kaynaklari
+- Kuran ayetleri: yazinsai/quran-validator reposu + Diyanet meali
+- Hadisler: Sahih Buhari ve Sahih Muslim'den secme hadisler (guvenilir kaynaklardan derleme)
+
+## Dosya Degisiklikleri
+1. **Yeni:** `public/quran.json` - Tum Kuran ayetleri (Arapca + Turkce meal)
+2. **Guncelleme:** `src/data/hadiths.ts` - 30'dan 360+ hadise genisletme
+3. **Guncelleme:** `src/hooks/useHourlyContent.ts` - JSON'dan ayet yuklemek icin guncelleme
+4. **Guncelleme:** `src/data/verses.ts` - Kaldirilacak veya JSON'a yonlendirilecek
+5. **Guncelleme:** `vite.config.ts` - PWA cache'ine quran.json ekleme
 
