@@ -2,6 +2,7 @@ import { useHourlyContent } from "@/hooks/useHourlyContent";
 import { RefreshCw, Share2, Moon, Sun } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import logo from "@/assets/logo.png";
 
 const Index = () => {
   const { verse, hadith, refresh } = useHourlyContent();
@@ -30,9 +31,10 @@ const Index = () => {
 
       {/* Header */}
       <header className="flex items-center justify-between px-5 pt-6 pb-2 relative z-10">
-        <h1 className="text-lg font-bold tracking-wide text-primary">
-          ☪ Ayet & Hadis
-        </h1>
+        <div className="flex items-center gap-2">
+          <img src={logo} alt="Logo" className="h-7 w-auto" />
+          <h1 className="text-lg font-bold tracking-wide text-primary">Ayet & Hadis</h1>
+        </div>
         <div className="flex gap-1">
           <Button
             variant="ghost"
