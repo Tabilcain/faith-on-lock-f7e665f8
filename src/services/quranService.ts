@@ -2,35 +2,9 @@ import { verses as fallbackVerses, type Verse } from "@/data/verses";
 
 const CACHE_KEY = "quran_all_verses";
 const CACHE_VERSION_KEY = "quran_cache_v";
-const CACHE_VERSION = "2";
+const CACHE_VERSION = "3"; // bumped for Diyanet source
 
-interface ApiSurah {
-  number: number;
-  name: string;
-  englishName: string;
-  numberOfAyahs: number;
-}
-
-interface ApiAyah {
-  number: number;
-  text: string;
-  numberInSurah: number;
-  surah: ApiSurah;
-}
-
-interface ApiResponse {
-  code: number;
-  data: {
-    surahs: {
-      number: number;
-      name: string;
-      englishName: string;
-      ayahs: ApiAyah[];
-    }[];
-  };
-}
-
-// Turkish surah names mapping
+// Turkish surah names mapping (used for normalization)
 const surahNamesTr: Record<number, string> = {
   1: "Fâtiha", 2: "Bakara", 3: "Âl-i İmrân", 4: "Nisâ", 5: "Mâide",
   6: "En'âm", 7: "A'râf", 8: "Enfâl", 9: "Tevbe", 10: "Yûnus",
@@ -81,7 +55,34 @@ function saveToCache(verses: Verse[]) {
   }
 }
 
-async function fetchFromApi(): Promise<Verse[]> {
+
+async function fetchFromDiyanet(): Promise<Verse[]> {
+  const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/diyanet-quran`;
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Diyanet edge function failed: ${res.status}`);
+  }
+
+  const json = await res.json();
+  if (!json.data || !Array.isArray(json.data)) {
+    throw new Error("Invalid response from Diyanet API");
+  }
+
+  return json.data.map((v: any) => ({
+    surah: surahNamesTr[v.surah_id] || "",
+    surahNumber: v.surah_id,
+    ayahNumber: v.verse_id_in_surah,
+    arabic: v.arabic_script?.text || "",
+    turkish: v.translation?.text || "",
+  }));
+}
+
+async function fetchFromAlquranCloud(): Promise<Verse[]> {
   const [arabicRes, turkishRes] = await Promise.all([
     fetch("https://api.alquran.cloud/v1/quran/quran-uthmani"),
     fetch("https://api.alquran.cloud/v1/quran/tr.diyanet"),
@@ -91,19 +92,16 @@ async function fetchFromApi(): Promise<Verse[]> {
     throw new Error("API fetch failed");
   }
 
-  const arabicData: ApiResponse = await arabicRes.json();
-  const turkishData: ApiResponse = await turkishRes.json();
+  const arabicData = await arabicRes.json();
+  const turkishData = await turkishRes.json();
 
   const verses: Verse[] = [];
-
   for (let si = 0; si < arabicData.data.surahs.length; si++) {
     const arSurah = arabicData.data.surahs[si];
     const trSurah = turkishData.data.surahs[si];
-
     for (let ai = 0; ai < arSurah.ayahs.length; ai++) {
       const arAyah = arSurah.ayahs[ai];
       const trAyah = trSurah.ayahs[ai];
-
       verses.push({
         surah: surahNamesTr[arSurah.number] || arSurah.englishName,
         surahNumber: arSurah.number,
@@ -113,28 +111,38 @@ async function fetchFromApi(): Promise<Verse[]> {
       });
     }
   }
-
   return verses;
 }
 
 export async function loadAllVerses(): Promise<Verse[]> {
   if (cachedVerses) return cachedVerses;
 
-  // Check localStorage cache
   const cached = loadFromCache();
   if (cached && cached.length > 100) {
     cachedVerses = cached;
     return cached;
   }
 
-  // Avoid duplicate fetches
   if (!loadingPromise) {
-    loadingPromise = fetchFromApi()
+    loadingPromise = fetchFromDiyanet()
       .then((verses) => {
+        console.log(`Loaded ${verses.length} verses from Diyanet API`);
         cachedVerses = verses;
         saveToCache(verses);
         loadingPromise = null;
         return verses;
+      })
+      .catch((err) => {
+        console.warn("Diyanet API failed, falling back to alquran.cloud:", err.message);
+        return fetchFromAlquranCloud();
+      })
+      .then((verses) => {
+        if (!cachedVerses) {
+          cachedVerses = verses;
+          saveToCache(verses);
+        }
+        loadingPromise = null;
+        return cachedVerses!;
       })
       .catch(() => {
         loadingPromise = null;

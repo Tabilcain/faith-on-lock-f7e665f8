@@ -1,1 +1,4 @@
 project_id = "xykdtflsdiavftejwyij"
+
+[functions.diyanet-quran]
+verify_jwt = false
