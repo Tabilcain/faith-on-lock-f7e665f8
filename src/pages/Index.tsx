@@ -3,6 +3,7 @@ import { RefreshCw, Share2, Moon, Sun, Smartphone } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 import logo from "@/assets/logo.png";
 
 const Index = () => {
@@ -16,10 +17,33 @@ const Index = () => {
 
   const handleShare = async () => {
     const text = `📖 ${verse.surah} Suresi, ${verse.ayahNumber}. Ayet\n${verse.turkish}\n\n📿 Hadis (${hadith.source})\n${hadith.turkish}`;
-    if (navigator.share) {
-      await navigator.share({ title: "Ayet & Hadis", text });
-    } else {
-      await navigator.clipboard.writeText(text);
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "Ayet & Hadis", text });
+        return;
+      }
+
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        toast({ title: "Metin panoya kopyalandı." });
+        return;
+      }
+
+      throw new Error("Clipboard unavailable");
+    } catch (err) {
+      if (err && typeof err === "object" && "name" in err && (err as { name: string }).name === "AbortError") {
+        return;
+      }
+      if (navigator.clipboard?.writeText) {
+        try {
+          await navigator.clipboard.writeText(text);
+          toast({ title: "Metin panoya kopyalandı." });
+          return;
+        } catch {
+          // fall through
+        }
+      }
+      toast({ title: "Paylaşım başarısız", description: "Metni manuel kopyalayın.", variant: "destructive" });
     }
   };
 

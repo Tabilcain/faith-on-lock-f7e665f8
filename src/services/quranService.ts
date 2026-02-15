@@ -7,7 +7,8 @@ export async function loadAllVerses(): Promise<Verse[]> {
   if (cachedVerses) return cachedVerses;
 
   if (!loadingPromise) {
-    loadingPromise = fetch("/quran.json")
+    const quranUrl = `${import.meta.env.BASE_URL}quran.json`;
+    loadingPromise = fetch(quranUrl)
       .then((res) => {
         if (!res.ok) throw new Error(`Failed to load quran.json: ${res.status}`);
         return res.json();

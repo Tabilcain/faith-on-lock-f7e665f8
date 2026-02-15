@@ -36,9 +36,11 @@ export function useHourlyContent() {
   // Load full data
   useEffect(() => {
     Promise.all([loadAllVerses(), loadAllHadiths()]).then(([verses, hadiths]) => {
+      const nextSeed = getHourlySeed();
       setAllVerses(verses);
       setAllHadiths(hadiths);
-      setContent(getContentForSeed(seed, verses, hadiths));
+      setSeed(nextSeed);
+      setContent(getContentForSeed(nextSeed, verses, hadiths));
     });
   }, []);
 
