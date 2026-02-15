@@ -104,15 +104,18 @@ const Index = () => {
             </span>
           </div>
 
-          <p
-            className="font-arabic text-xl leading-[2.2] text-right mb-5"
-            dir="rtl"
-            lang="ar"
-          >
-            {hadith.arabic}
-          </p>
-
-          <div className="h-px bg-border mb-4" />
+          {hadith.arabic && (
+            <>
+              <p
+                className="font-arabic text-xl leading-[2.2] text-right mb-5"
+                dir="rtl"
+                lang="ar"
+              >
+                {hadith.arabic}
+              </p>
+              <div className="h-px bg-border mb-4" />
+            </>
+          )}
 
           <p className="text-base leading-relaxed text-foreground/90">
             {hadith.turkish}

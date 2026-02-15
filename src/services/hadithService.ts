@@ -161,6 +161,12 @@ export async function loadAllHadiths(): Promise<Hadith[]> {
           if (/باب:/i.test(t)) return false;
           // Tam cümle kontrolü
           if (!/[.!?"\u201D]$/.test(t)) return false;
+          // Yarım kalan diyalog/soru kalıpları
+          const incompletePatterns = /(?:diye sordular|diye sordu|diye sorduk|diye sordum|ne emredersiniz|ne dersiniz|ne buyurursunuz|ne yapayım|ne yapalım)[.?!]?\s*$/i;
+          if (incompletePatterns.test(t)) return false;
+          // Son cümle soru ile bitiyorsa ve 2'den az cümle varsa
+          const sentences = t.split(/[.!?]+/).filter(s => s.trim().length > 0);
+          if (/\?\s*$/.test(t) && sentences.length < 2) return false;
           return true;
         });
         cachedHadiths = filtered.map((h) => ({
