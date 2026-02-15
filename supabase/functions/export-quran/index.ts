@@ -162,8 +162,13 @@ function cleanHadithText(text: string): string | null {
     cleaned = cleaned.replace(/^\)\s*/, "");
   }
 
-  // 8. İçeriğinde anlamsız kalıntılar varsa atla
-  if (/Su görünce|diye sordular\.\s*$/.test(cleaned) && cleaned.length < 80) return null;
+  // 8. Yarım kalan diyalog/soru kalıplarını filtrele (uzunluktan bağımsız)
+  const incompletePatterns = /(?:diye sordular|diye sordu|diye sorduk|diye sordum|ne emredersiniz|ne dersiniz|ne buyurursunuz|ne yapayım|ne yapalım|Su görünce)[.?!]?\s*$/i;
+  if (incompletePatterns.test(cleaned)) return null;
+
+  // 9. Son cümle soru ile bitiyorsa ve toplam 2'den az cümle varsa atla
+  const sentences = cleaned.split(/[.!?]+/).filter(s => s.trim().length > 0);
+  if (/\?\s*$/.test(cleaned) && sentences.length < 2) return null;
 
   return cleaned;
 }
