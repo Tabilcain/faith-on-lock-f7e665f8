@@ -98,6 +98,9 @@ async function fetchEdition(edition: string): Promise<RawEdition> {
 }
 
 function cleanHadithText(text: string): string | null {
+  // 0. Kodlama/OCR artifaktları — kelime içinde "/" varsa reddet
+  if (/\w\/\w/.test(text)) return null;
+
   // 1. Sened kesme - Rasulullah/Nebi kalıplarını bul, sonrasını al
   const senedPatterns = [
     /(?:Res[uû]l[uü]llah|Ras[uû]l[uü]llah|Res[uû]l-i Ekrem|Nebî|Nebi|Hz\.\s*Peygamber|Peygamber(?:imiz)?)\s*\(?\s*(?:s\.?a\.?v\.?|sallallah[uü]\s*aleyhi\s*ve\s*sellem)?\s*\)?\s*(?:şöyle\s+)?(?:buyurdu|dedi|söyledi|emretti|buyurmuştur|demiştir|söylemiştir)(?:\s*ki)?[:\s]+/i,
@@ -116,7 +119,6 @@ function cleanHadithText(text: string): string | null {
     }
   }
 
-  // Eğer hiçbir kalıp bulunamazsa, bu hadisi atla
   if (!found) return null;
 
   // 2. Gereksiz ekleri temizle
@@ -143,11 +145,13 @@ function cleanHadithText(text: string): string | null {
   // 5. Uzunluk kontrolü
   if (cleaned.length < 40 || cleaned.length > 450) return null;
 
-  // 6. Madde listesi formatındaki hadisleri ele — yarım kalan maddeleri atla  
-  // Metin sonunda "sayı." kalıbı varsa (ör: "3." veya ", 2.") bu hadisi tamamen atla
+  // 6. Kodlama artifaktı — temizlenmiş metinde de kontrol
+  if (/\w\/\w/.test(cleaned)) return null;
+
+  // 7. Madde listesi formatındaki hadisleri ele
   if (/\d\.\s*$/.test(cleaned)) return null;
 
-  // 7. Tam cümle kontrolü - nokta, soru işareti veya ünlem ile bitmeli
+  // 8. Tam cümle kontrolü
   if (!/[.!?"]$/.test(cleaned)) {
     const lastPeriod = cleaned.lastIndexOf(".");
     if (lastPeriod > 40) {
@@ -157,25 +161,68 @@ function cleanHadithText(text: string): string | null {
     }
   }
 
-  // 8. Başında parantez veya anlamsız karakter varsa atla
+  // 9. Başında parantez varsa temizle
   if (/^\)/.test(cleaned)) {
     cleaned = cleaned.replace(/^\)\s*/, "");
   }
 
-  // 8. Yarım kalan diyalog/soru kalıplarını filtrele (uzunluktan bağımsız)
+  // 10. Yarım kalan diyalog/soru kalıpları
   const incompletePatterns = /(?:diye sordular|diye sordu|diye sorduk|diye sordum|ne emredersiniz|ne dersiniz|ne buyurursunuz|ne yapayım|ne yapalım|Su görünce)[.?!]?\s*$/i;
   if (incompletePatterns.test(cleaned)) return null;
 
-  // 9. Son cümle soru ile bitiyorsa ve toplam 2'den az cümle varsa atla
+  // 11. Minimum 2 cümle — tek cümlelik komutlar bağlamsız kalır
   const sentences = cleaned.split(/[.!?]+/).filter(s => s.trim().length > 0);
+  if (sentences.length < 2) return null;
+
+  // 12. Son cümle soru ile bitiyorsa ve toplam 2'den az cümle varsa atla
   if (/\?\s*$/.test(cleaned) && sentences.length < 2) return null;
 
   return cleaned;
 }
 
+// Manevi/ahlaki içerik beyaz listesi (kitap adı alt-string eşleşmesi)
+const preferredBookKeywords = [
+  "faith", "belief", "iman",
+  "knowledge",
+  "good manners", "adab", "al-adab",
+  "invocations", "remembrance",
+  "heart tender", "riqaq", "ar-riqaq",
+  "heart-melting", "piety", "softening",
+  "virtues of the qur", "virtues of the qu",
+  "virtue, enjoining", "kinship",
+  "destiny", "qadar",
+  "fasting",
+  "prophets",
+  "virtues of the prophet", "merits of the prophet",
+  "oneness", "tawheed",
+  "interpretation of dreams",
+];
+
+// Fıkıh/hukuk kara listesi
+const excludedBookKeywords = [
+  "hudood", "blood money", "apostates", "jizyah", "khums",
+  "hunting", "slaughtering", "sacrifice", "menstrual",
+  "hiring", "bankruptcy", "loans", "agriculture", "water distribution",
+  "penalty of hunting", "pilgrimage",
+  "inheritance", "tricks", "compulsion",
+  "judicial", "government", "emancipating",
+  "pilgrims prevented", "fear prayer", "eclipses",
+  "suckling", "military expeditions", "expeditions led",
+  "marriage", "divorce", "wedlock", "nikaah",
+];
+
+function isPreferredBook(bookName: string): boolean {
+  const lower = bookName.toLowerCase();
+  return preferredBookKeywords.some(k => lower.includes(k));
+}
+
+function isExcludedBook(bookName: string): boolean {
+  const lower = bookName.toLowerCase();
+  return excludedBookKeywords.some(k => lower.includes(k));
+}
+
 function selectHadiths(edition: RawEdition, source: string, targetCount: number) {
   const sections = edition.metadata.sections;
-  const sectionKeys = Object.keys(sections).filter(k => k !== "0");
 
   // Tüm hadisleri temizle ve filtrele
   const cleanedAll: Array<{ id: number; text: string; source: string; book: number; bookName: string }> = [];
@@ -184,44 +231,67 @@ function selectHadiths(edition: RawEdition, source: string, targetCount: number)
     if (!h.text || h.text.trim().length < 30) continue;
     if (h.text.startsWith("AÇIKLAMALAR")) continue;
 
+    const bookNum = h.reference?.book || 0;
+    const bookKey = String(bookNum);
+    const bookName = sections[bookKey] || "";
+
+    // Kara listedeki kitapları atla
+    if (isExcludedBook(bookName)) continue;
+
     const cleaned = cleanHadithText(h.text);
     if (!cleaned) continue;
 
-    const bookNum = h.reference?.book || 0;
-    const bookKey = String(bookNum);
     cleanedAll.push({
       id: h.hadithnumber,
       text: cleaned,
       source,
       book: bookNum,
-      bookName: sections[bookKey] || "",
+      bookName,
     });
   }
 
-  // Kitaplara göre dağıt
-  const bySection: Record<number, typeof cleanedAll> = {};
-  for (const h of cleanedAll) {
-    if (!bySection[h.book]) bySection[h.book] = [];
-    bySection[h.book].push(h);
-  }
+  // Öncelikle beyaz listedeki kitaplardan al
+  const preferred = cleanedAll.filter(h => isPreferredBook(h.bookName));
+  const others = cleanedAll.filter(h => !isPreferredBook(h.bookName));
 
-  const perSection = Math.max(1, Math.ceil(targetCount / sectionKeys.length));
+  // Preferred'dan eşit dağılımla seç
   const selected: typeof cleanedAll = [];
 
-  for (const sectionKey of sectionKeys) {
-    const bookNum = parseInt(sectionKey);
-    const sectionHadiths = bySection[bookNum] || [];
-    if (sectionHadiths.length === 0) continue;
-
-    const step = Math.max(1, Math.floor(sectionHadiths.length / perSection));
-    let count = 0;
-    for (let i = 0; i < sectionHadiths.length && count < perSection; i += step) {
-      selected.push(sectionHadiths[i]);
-      count++;
-    }
-    if (selected.length >= targetCount) break;
+  // Preferred kitapları grupla
+  const byBook: Record<string, typeof cleanedAll> = {};
+  for (const h of preferred) {
+    const key = String(h.book);
+    if (!byBook[key]) byBook[key] = [];
+    byBook[key].push(h);
   }
 
+  const bookKeys = Object.keys(byBook);
+  if (bookKeys.length > 0) {
+    const perBook = Math.max(1, Math.ceil(targetCount / bookKeys.length));
+    for (const key of bookKeys) {
+      const bookHadiths = byBook[key];
+      const step = Math.max(1, Math.floor(bookHadiths.length / perBook));
+      let count = 0;
+      for (let i = 0; i < bookHadiths.length && count < perBook; i += step) {
+        selected.push(bookHadiths[i]);
+        count++;
+      }
+      if (selected.length >= targetCount) break;
+    }
+  }
+
+  // Hedef sayıya ulaşılamazsa diğerlerinden tamamla
+  if (selected.length < targetCount) {
+    const remaining = targetCount - selected.length;
+    const step = Math.max(1, Math.floor(others.length / remaining));
+    let count = 0;
+    for (let i = 0; i < others.length && count < remaining; i += step) {
+      selected.push(others[i]);
+      count++;
+    }
+  }
+
+  console.log(`${source}: preferred=${preferred.length}, others=${others.length}, selected=${selected.length}`);
   return selected.slice(0, targetCount);
 }
 

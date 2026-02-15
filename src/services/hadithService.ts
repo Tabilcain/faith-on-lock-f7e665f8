@@ -154,18 +154,22 @@ export async function loadAllHadiths(): Promise<Hadith[]> {
         const filtered = data.filter((h) => {
           const t = h.text;
           if (!t || t.length < 40 || t.length > 450) return false;
-          // Yarım kalan madde numaralarını filtrele (ör: "3." ile biten)
+          // OCR/kodlama artifaktları (kelime içinde "/" varsa)
+          if (/\w\/\w/.test(t)) return false;
+          // Yarım kalan madde numaraları
           if (/\d\.\s*$/.test(t)) return false;
-          // Anlamsız kalıntıları filtrele
+          // Anlamsız kalıntılar
           if (/BÖLÜM[ÜU]\s+B[İI]TT[İI]/i.test(t)) return false;
           if (/باب:/i.test(t)) return false;
           // Tam cümle kontrolü
           if (!/[.!?"\u201D]$/.test(t)) return false;
           // Yarım kalan diyalog/soru kalıpları
-          const incompletePatterns = /(?:diye sordular|diye sordu|diye sorduk|diye sordum|ne emredersiniz|ne dersiniz|ne buyurursunuz|ne yapayım|ne yapalım)[.?!]?\s*$/i;
+          const incompletePatterns = /(?:diye sordular|diye sordu|diye sorduk|diye sordum|ne emredersiniz|ne dersiniz|ne buyurursunuz|ne yapayım|ne yapalım|Su görünce)[.?!]?\s*$/i;
           if (incompletePatterns.test(t)) return false;
-          // Son cümle soru ile bitiyorsa ve 2'den az cümle varsa
+          // Minimum 2 cümle — tek cümlelik komutlar bağlamsız
           const sentences = t.split(/[.!?]+/).filter(s => s.trim().length > 0);
+          if (sentences.length < 2) return false;
+          // Son cümle soru ile bitiyorsa ve 2'den az cümle varsa
           if (/\?\s*$/.test(t) && sentences.length < 2) return false;
           return true;
         });
