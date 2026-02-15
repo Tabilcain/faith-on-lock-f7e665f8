@@ -16,7 +16,7 @@ function seededRandom(seed: number): number {
 
 function getContentForSeed(seed: number, verseList: Verse[], hadithList: Hadith[]) {
   const verseIndex = Math.floor(seededRandom(seed) * verseList.length);
-  const hadithIndex = Math.floor(seededRandom(seed + 1) * hadithList.length);
+  const hadithIndex = Math.floor(seededRandom(seed * 7 + 13) * hadithList.length);
   return {
     verse: verseList[verseIndex],
     hadith: hadithList[hadithIndex],
