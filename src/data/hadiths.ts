@@ -111,12 +111,6 @@ export const hadiths: Hadith[] = [
     book: "Vasiyyet, 14"
   },
   {
-    arabic: "لاَ تَغْضَبْ",
-    turkish: "Kızma!",
-    source: "Buhârî",
-    book: "Edeb, 76"
-  },
-  {
     arabic: "الْيَدُ الْعُلْيَا خَيْرٌ مِنَ الْيَدِ السُّفْلَى",
     turkish: "Veren el alan elden hayırlıdır.",
     source: "Buhârî",
@@ -139,12 +133,6 @@ export const hadiths: Hadith[] = [
     turkish: "İnsanların en hayırlısı insanlara en faydalı olanıdır.",
     source: "Buhârî",
     book: "Edeb"
-  },
-  {
-    arabic: "مَا مَلَأَ آدَمِيٌّ وِعَاءً شَرًّا مِنْ بَطْنٍ",
-    turkish: "Âdemoğlu midesinden daha kötü bir kap doldurmamıştır.",
-    source: "Buhârî",
-    book: "Et'ime"
   },
   {
     arabic: "إِنَّ اللَّهَ يُحِبُّ إِذَا عَمِلَ أَحَدُكُمْ عَمَلاً أَنْ يُتْقِنَهُ",
@@ -403,24 +391,6 @@ export const hadiths: Hadith[] = [
     book: "Akdiye"
   },
   {
-    arabic: "الْمُسْلِمُونَ عِنْدَ شُرُوطِهِمْ",
-    turkish: "Müslümanlar şartlarına bağlıdırlar.",
-    source: "Buhârî",
-    book: "İcâre, 14"
-  },
-  {
-    arabic: "مَنِ اقْتَطَعَ حَقَّ امْرِئٍ مُسْلِمٍ بِيَمِينِهِ فَقَدْ أَوْجَبَ اللَّهُ لَهُ النَّارَ",
-    turkish: "Kim yeminle bir Müslümanın hakkını gasp ederse Allah ona ateşi vacip kılmıştır.",
-    source: "Müslim",
-    book: "Îmân, 218"
-  },
-  {
-    arabic: "مَطْلُ الْغَنِيِّ ظُلْمٌ",
-    turkish: "Zenginin borcunu geciktirmesi zulümdür.",
-    source: "Buhârî",
-    book: "İstikrâz, 12"
-  },
-  {
     arabic: "إِنَّ اللَّهَ يُحِبُّ الْعَبْدَ التَّقِيَّ الْغَنِيَّ الْخَفِيَّ",
     turkish: "Allah takva sahibi, gönül zengini ve gösterişten uzak kulu sever.",
     source: "Müslim",
@@ -513,18 +483,6 @@ export const hadiths: Hadith[] = [
     book: "Enbiyâ, 50"
   },
   {
-    arabic: "الْحِكْمَةُ ضَالَّةُ الْمُؤْمِنِ فَحَيْثُ وَجَدَهَا فَهُوَ أَحَقُّ بِهَا",
-    turkish: "Hikmet müminin yitiğidir; nerede bulursa onu alır.",
-    source: "Buhârî",
-    book: "İlim"
-  },
-  {
-    arabic: "تَفَكُّرُ سَاعَةٍ خَيْرٌ مِنْ عِبَادَةِ سَنَةٍ",
-    turkish: "Bir saat tefekkür, bir yıllık nafile ibadetten hayırlıdır.",
-    source: "Buhârî",
-    book: "Rikâk"
-  },
-  {
     arabic: "الدِّينُ النَّصِيحَةُ",
     turkish: "Din nasihattir.",
     source: "Müslim",
@@ -556,46 +514,16 @@ export const hadiths: Hadith[] = [
   },
   // ===== 91-120: Rızık, Ticaret ve Çalışma =====
   {
-    arabic: "التَّاجِرُ الصَّدُوقُ الأَمِينُ مَعَ النَّبِيِّينَ وَالصِّدِّيقِينَ",
-    turkish: "Doğru sözlü ve güvenilir tüccar, peygamberler ve sıddıklarla beraberdir.",
-    source: "Buhârî",
-    book: "Büyû', 4"
-  },
-  {
     arabic: "مَا أَكَلَ أَحَدٌ طَعَامًا قَطُّ خَيْرًا مِنْ أَنْ يَأْكُلَ مِنْ عَمَلِ يَدِهِ",
     turkish: "Kişi kendi el emeğinden daha hayırlı bir lokma yememiştir.",
     source: "Buhârî",
     book: "Büyû', 15"
   },
   {
-    arabic: "مَنِ احْتَكَرَ فَهُوَ خَاطِئٌ",
-    turkish: "Kim karaborsacılık yaparsa günahkârdır.",
-    source: "Müslim",
-    book: "Müsâkât, 129"
-  },
-  {
-    arabic: "رَحِمَ اللَّهُ رَجُلاً سَمْحًا إِذَا بَاعَ وَإِذَا اشْتَرَى",
-    turkish: "Allah alırken de satarken de kolaylık gösteren kişiye rahmet etsin.",
-    source: "Buhârî",
-    book: "Büyû', 16"
-  },
-  {
     arabic: "مَنْ أَنْظَرَ مُعْسِرًا أَوْ وَضَعَ عَنْهُ أَظَلَّهُ اللَّهُ فِي ظِلِّهِ",
     turkish: "Kim darlık içindeki borçluya süre tanır veya borcunu affederse, Allah onu arşının gölgesinde gölgelendirir.",
     source: "Müslim",
     book: "Zühd, 74"
-  },
-  {
-    arabic: "الْبَيِّعَانِ بِالْخِيَارِ مَا لَمْ يَتَفَرَّقَا",
-    turkish: "Alıcı ile satıcı birbirlerinden ayrılmadıkça muhayyerdirler.",
-    source: "Buhârî",
-    book: "Büyû', 19"
-  },
-  {
-    arabic: "مَنْ أَخَذَ أَمْوَالَ النَّاسِ يُرِيدُ أَدَاءَهَا أَدَّى اللَّهُ عَنْهُ",
-    turkish: "Kim insanların malını ödeme niyetiyle alırsa, Allah onun borcunu öder.",
-    source: "Buhârî",
-    book: "İstikrâz, 2"
   },
   {
     arabic: "لَوْ أَنَّكُمْ تَتَوَكَّلُونَ عَلَى اللَّهِ حَقَّ تَوَكُّلِهِ لَرَزَقَكُمْ كَمَا يَرْزُقُ الطَّيْرَ تَغْدُو خِمَاصًا وَتَرُوحُ بِطَانًا",
@@ -726,12 +654,6 @@ export const hadiths: Hadith[] = [
     book: "Da'avât"
   },
   {
-    arabic: "إِذَا أَوَى أَحَدُكُمْ إِلَى فِرَاشِهِ فَلْيَنْفُضْ فِرَاشَهُ",
-    turkish: "Biriniz yatağına girdiğinde yatağını silkelesin.",
-    source: "Buhârî",
-    book: "Da'avât"
-  },
-  {
     arabic: "مَا عَابَ النَّبِيُّ طَعَامًا قَطُّ إِنِ اشْتَهَاهُ أَكَلَهُ وَإِلاَّ تَرَكَهُ",
     turkish: "Peygamber hiçbir yemeği ayıplamadı. Canı çekerse yer, çekmezse bırakırdı.",
     source: "Buhârî",
@@ -779,12 +701,6 @@ export const hadiths: Hadith[] = [
     turkish: "Kim Allah'a kavuşmayı severse Allah da ona kavuşmayı sever.",
     source: "Buhârî",
     book: "Rikâk, 41"
-  },
-  {
-    arabic: "إِذَا مَاتَ ابْنُ آدَمَ انْقَطَعَ عَمَلُهُ إِلاَّ مِنْ ثَلاَثٍ",
-    turkish: "Âdemoğlu ölünce ameli üç şey dışında kesilir: Sadaka-i cariye, faydalı ilim, hayırlı evlat.",
-    source: "Müslim",
-    book: "Vasiyyet, 14"
   },
   {
     arabic: "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ وَأَعُوذُ بِكَ مِنَ النَّارِ",
@@ -1288,12 +1204,6 @@ export const hadiths: Hadith[] = [
   },
   // ===== 211-240: Sağlık, Yeme-İçme =====
   {
-    arabic: "الْمَعِدَةُ بَيْتُ الدَّاءِ وَالْحِمْيَةُ رَأْسُ الدَّوَاءِ",
-    turkish: "Mide hastalığın evidir, perhiz ilacın başıdır.",
-    source: "Buhârî",
-    book: "Tıbb"
-  },
-  {
     arabic: "مَا مَلَأَ آدَمِيٌّ وِعَاءً شَرًّا مِنْ بَطْنٍ بِحَسْبِ ابْنِ آدَمَ أَكَلاَتٌ يُقِمْنَ صُلْبَهُ",
     turkish: "Âdemoğlu midesinden daha kötü bir kap doldurmamıştır. Belini doğrultacak birkaç lokma yeterlidir.",
     source: "Buhârî",
@@ -1322,12 +1232,6 @@ export const hadiths: Hadith[] = [
     turkish: "Allah'ın adını anın, sağ elinizle yiyin ve önünüzden yiyin.",
     source: "Buhârî",
     book: "Et'ime, 2"
-  },
-  {
-    arabic: "إِذَا شَرِبَ أَحَدُكُمْ فَلاَ يَتَنَفَّسْ فِي الإِنَاءِ",
-    turkish: "Biriniz su içerken kabın içine nefes vermesin.",
-    source: "Buhârî",
-    book: "Eşribe, 25"
   },
   {
     arabic: "مَا عَالَ مَنِ اقْتَصَدَ",
@@ -1359,12 +1263,6 @@ export const hadiths: Hadith[] = [
     turkish: "Gerçek mücahit, nefsiyle cihad edendir.",
     source: "Buhârî",
     book: "Cihâd"
-  },
-  {
-    arabic: "مَنْ مَاتَ وَلَمْ يَغْزُ وَلَمْ يُحَدِّثْ نَفْسَهُ بِالْغَزْوِ مَاتَ عَلَى شُعْبَةٍ مِنْ نِفَاقٍ",
-    turkish: "Kim cihada çıkmadan ve içinden cihadı geçirmeden ölürse münafıklığın bir şubesi üzere ölmüştür.",
-    source: "Müslim",
-    book: "İmâre, 158"
   },
   {
     arabic: "رِبَاطُ يَوْمٍ فِي سَبِيلِ اللَّهِ خَيْرٌ مِنَ الدُّنْيَا وَمَا عَلَيْهَا",
@@ -1524,12 +1422,6 @@ export const hadiths: Hadith[] = [
     source: "Buhârî",
     book: "Şirb"
   },
-  {
-    arabic: "عُذِّبَتِ امْرَأَةٌ فِي هِرَّةٍ سَجَنَتْهَا",
-    turkish: "Bir kadın hapsettiği bir kedi yüzünden azap gördü.",
-    source: "Müslim",
-    book: "Birr, 133"
-  },
   // ===== 251-280: Selam, Barış ve İnsan İlişkileri =====
   {
     arabic: "أَفْشُوا السَّلاَمَ بَيْنَكُمْ",
@@ -1542,12 +1434,6 @@ export const hadiths: Hadith[] = [
     turkish: "İman etmedikçe cennete giremezsiniz, birbirinizi sevmedikçe de iman etmiş olmazsınız. Selamı aranızda yayın.",
     source: "Müslim",
     book: "Îmân, 93"
-  },
-  {
-    arabic: "الْمُسْلِمُ مَنْ سَلِمَ النَّاسُ مِنْ لِسَانِهِ وَيَدِهِ وَالْمُهَاجِرُ مَنْ هَجَرَ مَا نَهَى اللَّهُ عَنْهُ",
-    turkish: "Müslüman dilinden ve elinden insanların güvende olduğu kimsedir. Muhacir de Allah'ın yasaklarını terk edendir.",
-    source: "Buhârî",
-    book: "Îmân, 4"
   },
   {
     arabic: "خَيْرُهُمَا الَّذِي يَبْدَأُ بِالسَّلاَمِ",
@@ -1599,12 +1485,6 @@ export const hadiths: Hadith[] = [
     book: "Büyû', 10"
   },
   {
-    arabic: "الْمُتَبَايِعَانِ بِالْخِيَارِ مَا لَمْ يَتَفَرَّقَا فَإِنْ صَدَقَا وَبَيَّنَا بُورِكَ لَهُمَا فِي بَيْعِهِمَا",
-    turkish: "Alıcı ve satıcı ayrılmadıkça muhayyerdirler. Doğru söyler ve açıklarlarsa alışverişleri bereketlenir.",
-    source: "Buhârî",
-    book: "Büyû', 22"
-  },
-  {
     arabic: "مَنْ أَشَارَ إِلَى أَخِيهِ بِحَدِيدَةٍ فَإِنَّ الْمَلاَئِكَةَ تَلْعَنُهُ",
     turkish: "Kim kardeşine kesici bir aletle işaret ederse melekler ona lanet eder.",
     source: "Müslim",
@@ -1645,12 +1525,6 @@ export const hadiths: Hadith[] = [
     turkish: "Kim bir karış yer haksızlık ederse yedi kat yerin tamamı boynuna dolanır.",
     source: "Buhârî",
     book: "Mezâlim, 13"
-  },
-  {
-    arabic: "مَنِ اقْتَطَعَ شِبْرًا مِنَ الأَرْضِ ظُلْمًا طَوَّقَهُ اللَّهُ إِيَّاهُ يَوْمَ الْقِيَامَةِ مِنْ سَبْعِ أَرَضِينَ",
-    turkish: "Kim haksız yere bir karış toprak koparırsa kıyamette yedi kat yer boynuna sarılır.",
-    source: "Müslim",
-    book: "Müsâkât, 139"
   },
   // ===== 271-300: Çeşitli Hikmetler =====
   {
@@ -1694,24 +1568,6 @@ export const hadiths: Hadith[] = [
     turkish: "Kim ezandan sonra 'Allahümme Rabbe hâzihi'd-da'veti't-tâmme...' duasını okursa kıyamette şefaatime hak kazanır.",
     source: "Buhârî",
     book: "Ezân, 8"
-  },
-  {
-    arabic: "إِذَا نَعَسَ أَحَدُكُمْ وَهُوَ يُصَلِّي فَلْيَرْقُدْ حَتَّى يَذْهَبَ عَنْهُ النَّوْمُ",
-    turkish: "Namazda uyuklarsanız uykusu geçinceye kadar uyusun.",
-    source: "Buhârî",
-    book: "Vudû', 53"
-  },
-  {
-    arabic: "إِذَا تَثَاءَبَ أَحَدُكُمْ فَلْيَكْظِمْ مَا اسْتَطَاعَ",
-    turkish: "Biriniz esneyince gücü yettiğince ağzını kapatsın.",
-    source: "Müslim",
-    book: "Zühd, 56"
-  },
-  {
-    arabic: "الْعُطَاسُ مِنَ اللَّهِ وَالتَّثَاؤُبُ مِنَ الشَّيْطَانِ",
-    turkish: "Hapşırık Allah'tandır, esneme şeytandandır.",
-    source: "Buhârî",
-    book: "Edeb, 128"
   },
   // ===== 281-310: Kader, İlahi İrade =====
   {
@@ -1782,12 +1638,6 @@ export const hadiths: Hadith[] = [
     book: "Tahâret"
   },
   {
-    arabic: "صَلُّوا كَمَا رَأَيْتُمُونِي أُصَلِّي",
-    turkish: "Beni nasıl namaz kılarken gördüyseniz öyle kılın.",
-    source: "Buhârî",
-    book: "Ezân, 18"
-  },
-  {
     arabic: "مَنْ حَافَظَ عَلَى أَرْبَعِ رَكَعَاتٍ قَبْلَ الظُّهْرِ وَأَرْبَعٍ بَعْدَهَا حُرِّمَ عَلَى النَّارِ",
     turkish: "Kim öğleden önce dört, sonra dört rekât namaz kılmaya devam ederse ateşe haram kılınır.",
     source: "Buhârî",
@@ -1816,12 +1666,6 @@ export const hadiths: Hadith[] = [
     turkish: "Biriniz mescide girdiğinde iki rekât namaz kılmadan oturmasın.",
     source: "Buhârî",
     book: "Salât, 60"
-  },
-  {
-    arabic: "إِذَا أُقِيمَتِ الصَّلاَةُ فَلاَ صَلاَةَ إِلاَّ الْمَكْتُوبَةُ",
-    turkish: "Kamet getirildiğinde farzdan başka namaz kılınmaz.",
-    source: "Müslim",
-    book: "Müsâfirîn, 63"
   },
   {
     arabic: "مَنْ تَرَكَ صَلاَةَ الْعَصْرِ فَقَدْ حَبِطَ عَمَلُهُ",
@@ -1861,40 +1705,10 @@ export const hadiths: Hadith[] = [
     book: "Hac"
   },
   {
-    arabic: "خُذُوا عَنِّي مَنَاسِكَكُمْ",
-    turkish: "Hac ibadetinizi benden öğrenin.",
-    source: "Müslim",
-    book: "Hac, 310"
-  },
-  {
-    arabic: "الطَّوَافُ بِالْبَيْتِ صَلاَةٌ",
-    turkish: "Kâbe'yi tavaf etmek namaz gibidir.",
-    source: "Buhârî",
-    book: "Hac"
-  },
-  {
-    arabic: "اسْتَمْتِعُوا مِنْ هَذَا الْبَيْتِ فَإِنَّهُ قَدْ هُدِمَ مَرَّتَيْنِ وَيُرْفَعُ فِي الثَّالِثَةِ",
-    turkish: "Bu Beyt'ten (Kâbe) istifade edin; çünkü iki kez yıkıldı, üçüncüde kaldırılacaktır.",
-    source: "Buhârî",
-    book: "Hac"
-  },
-  {
-    arabic: "الْحَجَرُ الأَسْوَدُ مِنَ الْجَنَّةِ",
-    turkish: "Hacer-i Esved cennetten inmiştir.",
-    source: "Buhârî",
-    book: "Hac"
-  },
-  {
     arabic: "إِنَّ أَعْظَمَ الأَيَّامِ عِنْدَ اللَّهِ يَوْمُ النَّحْرِ",
     turkish: "Allah katında günlerin en büyüğü kurban bayramı günüdür.",
     source: "Buhârî",
     book: "Hac"
-  },
-  {
-    arabic: "مَا عَمِلَ آدَمِيٌّ مِنْ عَمَلٍ يَوْمَ النَّحْرِ أَحَبَّ إِلَى اللَّهِ مِنْ إِهْرَاقِ الدَّمِ",
-    turkish: "Kurban bayramı günü Allah'a kan akıtmaktan (kurban kesmekten) daha sevimli bir amel yoktur.",
-    source: "Buhârî",
-    book: "Edâhî"
   },
   // ===== 311-340: Fitne, Son Zamanlar =====
   {
@@ -1928,12 +1742,6 @@ export const hadiths: Hadith[] = [
     book: "İ'tisâm"
   },
   {
-    arabic: "يُوشِكُ أَنْ يَأْتِيَ عَلَى النَّاسِ زَمَانٌ لاَ يُبَالِي الْمَرْءُ بِمَا أَخَذَ الْمَالَ أَمِنْ حَلاَلٍ أَمْ مِنْ حَرَامٍ",
-    turkish: "İnsanlara öyle bir zaman gelecek ki kişi malı helalden mi haramdan mı aldığına aldırmayacak.",
-    source: "Buhârî",
-    book: "Büyû', 7"
-  },
-  {
     arabic: "لاَ تَزَالُ طَائِفَةٌ مِنْ أُمَّتِي عَلَى الْحَقِّ ظَاهِرِينَ",
     turkish: "Ümmetimden bir grup kıyamete kadar hak üzere galip olmaya devam edecektir.",
     source: "Müslim",
@@ -1944,18 +1752,6 @@ export const hadiths: Hadith[] = [
     turkish: "İşler ehli olmayanlara verildiğinde kıyameti bekle.",
     source: "Buhârî",
     book: "İlim, 2"
-  },
-  {
-    arabic: "لَنْ يُفْلِحَ قَوْمٌ وَلَّوْا أَمْرَهُمُ امْرَأَةً",
-    turkish: "İşlerini bir kadına teslim eden kavim felah bulmaz.",
-    source: "Buhârî",
-    book: "Megâzî, 82"
-  },
-  {
-    arabic: "الْخِلاَفَةُ بَعْدِي ثَلاَثُونَ سَنَةً ثُمَّ يَكُونُ مُلْكًا",
-    turkish: "Benden sonra hilafet otuz yıl sürecek, sonra saltanat olacaktır.",
-    source: "Buhârî",
-    book: "Fezâil"
   },
   // ===== 321-360: Ek Hadisler =====
   {
@@ -2001,24 +1797,6 @@ export const hadiths: Hadith[] = [
     book: "Rikâk"
   },
   {
-    arabic: "أَحَبُّ النَّاسِ إِلَى اللَّهِ أَنْفَعُهُمْ لِلنَّاسِ",
-    turkish: "Allah'a en sevimli insanlar, insanlara en faydalı olanlardır.",
-    source: "Buhârî",
-    book: "Edeb"
-  },
-  {
-    arabic: "مَنْ نَفَّسَ عَنْ مُسْلِمٍ كُرْبَةً نَفَّسَ اللَّهُ عَنْهُ كُرْبَةً مِنْ كُرَبِ يَوْمِ الْقِيَامَةِ",
-    turkish: "Kim bir Müslümanın sıkıntısını giderirse Allah da onun kıyamet sıkıntılarından birini giderir.",
-    source: "Buhârî",
-    book: "Mezâlim"
-  },
-  {
-    arabic: "مَنْ سَتَرَ عَوْرَةَ أَخِيهِ الْمُسْلِمِ سَتَرَ اللَّهُ عَوْرَتَهُ يَوْمَ الْقِيَامَةِ",
-    turkish: "Kim Müslüman kardeşinin ayıbını örterse Allah da kıyamette onun ayıbını örter.",
-    source: "Buhârî",
-    book: "Mezâlim"
-  },
-  {
     arabic: "وَمَنْ يَسَّرَ عَلَى مُعْسِرٍ يَسَّرَ اللَّهُ عَلَيْهِ فِي الدُّنْيَا وَالآخِرَةِ",
     turkish: "Kim zor durumdaki birine kolaylık gösterirse Allah da ona dünyada ve ahirette kolaylık gösterir.",
     source: "Müslim",
@@ -2053,12 +1831,6 @@ export const hadiths: Hadith[] = [
     turkish: "Allah katında komşuların en hayırlısı komşusuna en iyi davrananıdır.",
     source: "Buhârî",
     book: "Edeb"
-  },
-  {
-    arabic: "الدَّالُّ عَلَى الْخَيْرِ كَفَاعِلِهِ",
-    turkish: "Hayra vesile olan onu yapan gibidir.",
-    source: "Müslim",
-    book: "İmâre, 133"
   },
   {
     arabic: "أَحَبُّ الْكَلاَمِ إِلَى اللَّهِ أَرْبَعٌ سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ وَلاَ إِلَهَ إِلاَّ اللَّهُ وَاللَّهُ أَكْبَرُ",
