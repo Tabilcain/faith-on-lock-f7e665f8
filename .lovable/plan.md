@@ -1,60 +1,51 @@
 
 
-# Hadis Metinlerini Temizleme ve Kuran Meali Guncelleme
+# Hadis Yarım Kalma Sorununu Duzeltme
 
 ## Sorun
 
-Mevcut hadis metinleri iki buyuk sorun iceriyor:
-1. **Sened (rivayet zinciri)** - "Bize Amru'n-Nakid rivayet etti. (Dediki): Bize Ebu Ahmed Ez-Zubeyri rivayet etti..." gibi uzun isnad zincirleri hadis metninin anlamini gizliyor
-2. **Gereksiz ekler** - "Tekrar: 54, 2529...", "Diger Tahric:", "IZAHI ICIN BURAYA TIKLA" gibi referans notlari metin icinde kaliyor
-3. **Uzun ve kesik metinler** - Widget'a sigmayacak kadar uzun hadisler seciliyor, yarim kaliyor
+Ekran goruntusundeki gibi, bazi hadisler "diye sordular." veya "ne emredersiniz?" gibi soru kaliplariyla bitiyor -- yani sorunun cevabi (Hz. Peygamber'in sozu) eksik. Mevcut filtre bunu sadece 80 karakterden kisa metinlerde yakaliyor, uzun olanlari geciriyor.
 
-## Diyanet GitHub Reposu
+Ayrica hadis kartinda bos Arapca metin alani gorunuyor (hadislerde Arapca metin yok).
 
-Diyanet-bid/Kuran reposu bir Next.js web uygulamasi - veri kaynagi degil. Ayni `acikkaynakkuran-dev.diyanet.gov.tr` API'sini kullaniyor. Mevcut `quran.json` zaten `tr.diyanet` mealini iceriyor, yani guncel Diyanet meali zaten uygulamada mevcut.
+## Cozum
 
-## Cozum Plani
+### 1. Eksik/yarim hadis filtrelerini guclendir
 
-### Adim 1: Edge Function'da Hadis Metin Temizleme
-`supabase/functions/export-quran/index.ts` dosyasindaki `selectHadiths` fonksiyonuna metin temizleme mantigi eklenecek:
+Hem edge function hem client-side'da su kaliplari **uzunluktan bagimsiz** olarak reddet:
 
-- **Sened kaldirilacak:** "Resulullah (s.a.v.) soyle buyurdu:", "Nebi (s.a.v.) buyurdu ki:" gibi kaliplar bulunacak ve metnin sadece bu noktadan sonrasi alinacak
-- **Gereksiz ekler temizlenecek:** "Tekrar:", "Diger Tahric:", "IZAHI ICIN BURAYA TIKLA", "Tekrari:" gibi referans notlari kesilecek
-- **Uzunluk siniri:** Widget'a sigmasi icin maksimum 500 karakter siniri konulacak - daha uzun hadisler secilmeyecek
-- **Kalite filtresi:** Sadece anlamli, tam cumlelerle biten hadisler secilecek (nokta veya tirnak isaretiyle biten)
+- `diye sordular.` ile biten metinler
+- `diye sordu.` ile biten metinler  
+- `ne emredersiniz?` ile biten metinler
+- `ne dersiniz?` ile biten metinler
+- `ne buyurursunuz?` ile biten metinler
+- Genel olarak: metin icinde soru sorulup cevap verilmemis hadisler
 
-### Adim 2: Hadis Secim Kriterleri Guncelleme
-- Icinde "buyurdu", "dedi", "soyledi", "emretti" gibi anahtar kelimeler gecen hadisler oncelikli secilecek
-- Cok kisa (50 karakterden az) veya cok uzun (500 karakterden fazla) hadisler elenecek
-- Her kitaptan dengeli dagilim korunacak
+Bunlara ek olarak, tamamlanmamis diyalog isaretleri de filtrelenecek:
+- Acilan tirnak kapanmamissa
+- Son cumle bir soru ve toplam metin 2 cumleden azsa
 
-### Adim 3: hadiths.json Yeniden Olusturma
-- Edge function deploy edilecek ve `?mode=hadiths` ile cagrilacak
-- Temizlenmis hadisler `public/hadiths.json` dosyasina yazilacak
-- Buhari'den ~500, Muslim'den ~500 olmak uzere toplam ~1000 temiz hadis
+### 2. Bos Arapca alani gizle
 
-### Adim 4: Frontend Gosterimi Iyilestirme
-- `src/pages/Index.tsx` hadis karti: Sened bilgisi yerine dogrudan Hz. Peygamber'in sozu gorunecek
-- Kaynak bilgisi (Sahih Buhari, Kitap adi) alt kisimda kalacak
+Hadis kartinda `hadith.arabic` bos string oldugunda Arapca metin blogu ve ayirici cizgi gosterilmeyecek.
+
+### 3. hadiths.json yeniden olustur
+
+Guncellenmis edge function ile `hadiths.json` yeniden olusturulacak.
 
 ## Teknik Detaylar
 
-### Metin Temizleme Regex Kaliplari
-```text
-Sened kesme:
-- /(Resulullah|Nebi|Hz\. Peygamber|Rasulullah).*?(soyle )?(buyurdu|dedi|soyledi)(\s*ki)?[:\s]*/
-- Eger bu kalip bulunamazsa, hadis secilmeyecek
+### Dosya degisiklikleri
 
-Gereksiz ek temizleme:
-- /Tekrar[ıi]?:\s*.*/  -> kesilecek
-- /Diğer [Tt]ahric.*/  -> kesilecek  
-- /İZAHI İÇİN.*/       -> kesilecek
-- /\(Yani .*?\)/        -> kaldirilacak (parantez icindeki aciklamalar)
-```
+**`supabase/functions/export-quran/index.ts`** - cleanHadithText fonksiyonu:
+- Satir 166'daki `diye sordular` filtresi genisletilecek -- uzunluk siniri kaldirilacak
+- Ek yarim-kalmis kaliplari eklenecek: `diye sordu`, `ne emredersiniz`, `ne dersiniz`, `ne buyurursunuz`
 
-### Dosya Degisiklikleri
-1. **Guncelleme:** `supabase/functions/export-quran/index.ts` - Hadis temizleme mantigi
-2. **Yeniden olusturma:** `public/hadiths.json` - Temiz hadis verisi
-3. **Degisiklik yok:** `src/services/hadithService.ts` - Mevcut yapi yeterli
-4. **Degisiklik yok:** `src/pages/Index.tsx` - Mevcut kart yapisi zaten uygun (sened gidince duzgun gorunecek)
+**`src/services/hadithService.ts`** - Client-side filtre:
+- Ayni kaliplari client tarafinda da ekle (ikinci savunma hatti)
+
+**`src/pages/Index.tsx`** - Hadis karti:
+- Arapca metin blogu ve ayirici cizgiyi `hadith.arabic` bos degilse goster seklinde kosullu yap (satir 107-115)
+
+**`public/hadiths.json`** - Yeniden olusturulacak
 
