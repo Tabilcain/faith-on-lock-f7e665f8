@@ -220,6 +220,11 @@ export async function loadAllHadiths(): Promise<Hadith[]> {
           const sentences = t.split(/[.!?]+/).filter(s => s.trim().length > 0);
           if (sentences.length < 2) return false;
           if (/\?\s*$/.test(t) && sentences.length < 2) return false;
+          // Bağlamı eksik: "Hadi", "Haydi", "Sakın" gibi emir kalıplarıyla başlayan kısa hadisler
+          if (/^(Hadi|Haydi|Sakın|Dikkat)\b/i.test(t) && sentences.length < 3) return false;
+          // Çok kısa cümlelerden oluşan emir listeleri (ort. cümle uzunluğu < 50 karakter)
+          const avgLen = t.length / sentences.length;
+          if (avgLen < 35 && sentences.length <= 3) return false;
           return true;
         });
         cachedHadiths = filtered.map((h) => ({
