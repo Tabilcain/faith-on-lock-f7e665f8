@@ -137,6 +137,54 @@ const bookNameMap: Record<string, string> = {
   "The Book of Miscellaneous ahadith of Significant Values": "Muhtelif Hadisler",
 };
 
+// Fıkıh/hukuk kategorileri — bu kitaplardan gelen hadisleri client-side'da da filtrele
+const excludedBookKeywords = [
+  "hudood", "blood money", "apostates", "jizyah", "khums",
+  "hunting", "slaughtering", "sacrifice", "menstrual",
+  "hiring", "bankruptcy", "loans", "agriculture", "water distribution",
+  "penalty of hunting", "pilgrimage",
+  "inheritance", "tricks", "compulsion",
+  "judicial", "government", "emancipating",
+  "pilgrims prevented", "fear prayer", "eclipses",
+  "suckling", "military expeditions", "expeditions led",
+  "marriage", "divorce", "wedlock", "nikaah",
+  "sales", "trade", "transferance", "proxy", "representation",
+  "bathing", "ghusl", "ablutions", "wudu", "tayammum",
+  "funerals", "janaa",
+  "charity tax", "zakat",
+  "hajj", "umrah",
+  "oaths", "vows", "expiation",
+  "blood", "punishment", "disbelievers",
+  "dress", "drinks", "food", "meals",
+  "patients", "medicine",
+  "asking permission",
+];
+
+const excludedBookKeywordsTr = [
+  "hudûd", "cezâ", "diyât", "kan bedeli", "mürtedler", "cizye", "humus",
+  "av ve kesim", "kurban", "hayız",
+  "kirâlama", "borçlar", "ziraat", "su dağıtımı",
+  "avlanma cezası", "hac", "umre", "ihsâr",
+  "ferâiz", "mîras", "hîleler", "ikrâh", "zorlama",
+  "kazâ", "yargı", "imâret", "yönetim", "köle",
+  "korku namazı", "küsûf",
+  "süt emzirme", "meğâzî", "gazâlar", "cihâd",
+  "nikâh", "talâk", "boşanma", "nafaka",
+  "alış-veriş", "selem", "havâle", "vekâlet",
+  "abdest", "gusül", "teyemmüm",
+  "cenâze", "zekât", "sadaka-i fıtır",
+  "yeminler", "adaklar", "keffâret",
+  "muhârebîn", "giyim", "içecekler", "yiyecekler",
+  "hastalar", "tıp",
+  "izin isteme",
+];
+
+function isExcludedBookClient(bookName: string): boolean {
+  const lower = bookName.toLowerCase();
+  return excludedBookKeywords.some(k => lower.includes(k)) ||
+    excludedBookKeywordsTr.some(k => lower.includes(k));
+}
+
 let cachedHadiths: Hadith[] | null = null;
 let loadingPromise: Promise<Hadith[]> | null = null;
 
@@ -152,6 +200,8 @@ export async function loadAllHadiths(): Promise<Hadith[]> {
       .then((data: RawHadith[]) => {
         // Client-side quality filtering
         const filtered = data.filter((h) => {
+          // Kitap kategorisi filtresi — fıkıh/hukuk kitaplarını dışla
+          if (h.bookName && isExcludedBookClient(h.bookName)) return false;
           const t = h.text;
           if (!t || t.length < 40 || t.length > 450) return false;
           // OCR/kodlama artifaktları (kelime içinde "/" varsa)
@@ -166,10 +216,9 @@ export async function loadAllHadiths(): Promise<Hadith[]> {
           // Yarım kalan diyalog/soru kalıpları
           const incompletePatterns = /(?:diye sordular|diye sordu|diye sorduk|diye sordum|ne emredersiniz|ne dersiniz|ne buyurursunuz|ne yapayım|ne yapalım|Su görünce)[.?!]?\s*$/i;
           if (incompletePatterns.test(t)) return false;
-          // Minimum 2 cümle — tek cümlelik komutlar bağlamsız
+          // Minimum 2 cümle
           const sentences = t.split(/[.!?]+/).filter(s => s.trim().length > 0);
           if (sentences.length < 2) return false;
-          // Son cümle soru ile bitiyorsa ve 2'den az cümle varsa
           if (/\?\s*$/.test(t) && sentences.length < 2) return false;
           return true;
         });
