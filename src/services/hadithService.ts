@@ -216,6 +216,15 @@ export async function loadAllHadiths(): Promise<Hadith[]> {
           // Yarım kalan diyalog/soru kalıpları
           const incompletePatterns = /(?:diye sordular|diye sordu|diye sorduk|diye sordum|ne emredersiniz|ne dersiniz|ne buyurursunuz|ne yapayım|ne yapalım|Su görünce)[.?!]?\s*$/i;
           if (incompletePatterns.test(t)) return false;
+          // Sened kalıntıları — rivayet zinciri ifadeleri metin içinde kalmış
+          if (/(?:Ravi|Râvi)\s+(?:şöyle|böyle)/i.test(t)) return false;
+          if (/(?:Nebi|Nebî|Peygamber)\s+(?:s\.?a\.?v|sallallah)/i.test(t)) return false;
+          // Ayet alıntısı içeren (bağlamsız tefsir parçaları)
+          if (/ayetin[ie]\s+okud|ayeti?ni?\s+tilav/i.test(t)) return false;
+          // "buyurdu" ile başlayan (öncesi kesilmiş)
+          if (/^["']?(?:buyurdu|dedi|söyledi)/i.test(t)) return false;
+          // Hz. Ömer/Ebubekir vb. diyalog parçaları (bağlamsız sahabe sözleri)
+          if (/Hz\.\s*(?:Ömer|Ebubekir|Osman|Ali)\s*[:]/i.test(t)) return false;
           // Minimum 2 cümle
           const sentences = t.split(/[.!?]+/).filter(s => s.trim().length > 0);
           if (sentences.length < 2) return false;
