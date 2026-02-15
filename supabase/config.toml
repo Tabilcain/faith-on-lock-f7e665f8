@@ -2,3 +2,6 @@ project_id = "xykdtflsdiavftejwyij"
 
 [functions.diyanet-quran]
 verify_jwt = false
+
+[functions.export-quran]
+verify_jwt = false

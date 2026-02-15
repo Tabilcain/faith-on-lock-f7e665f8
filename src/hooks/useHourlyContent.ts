@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { verses as fallbackVerses, type Verse } from "@/data/verses";
-import { hadiths, type Hadith } from "@/data/hadiths";
+import { hadiths as fallbackHadiths, type Hadith } from "@/data/hadiths";
 import { loadAllVerses, getLoadedVerses } from "@/services/quranService";
+import { loadAllHadiths, getLoadedHadiths } from "@/services/hadithService";
 
 function getHourlySeed(): number {
   const now = new Date();
@@ -13,28 +14,31 @@ function seededRandom(seed: number): number {
   return x - Math.floor(x);
 }
 
-function getContentForSeed(seed: number, verseList: Verse[]) {
+function getContentForSeed(seed: number, verseList: Verse[], hadithList: Hadith[]) {
   const verseIndex = Math.floor(seededRandom(seed) * verseList.length);
-  const hadithIndex = Math.floor(seededRandom(seed + 1) * hadiths.length);
+  const hadithIndex = Math.floor(seededRandom(seed + 1) * hadithList.length);
   return {
     verse: verseList[verseIndex],
-    hadith: hadiths[hadithIndex],
+    hadith: hadithList[hadithIndex],
   };
 }
 
 export function useHourlyContent() {
   const [seed, setSeed] = useState(getHourlySeed);
   const [allVerses, setAllVerses] = useState<Verse[]>(() => getLoadedVerses() || fallbackVerses);
+  const [allHadiths, setAllHadiths] = useState<Hadith[]>(() => getLoadedHadiths() || fallbackHadiths);
   const [content, setContent] = useState(() => {
     const verses = getLoadedVerses() || fallbackVerses;
-    return getContentForSeed(getHourlySeed(), verses);
+    const hadiths = getLoadedHadiths() || fallbackHadiths;
+    return getContentForSeed(getHourlySeed(), verses, hadiths);
   });
 
-  // Load full Quran data
+  // Load full data
   useEffect(() => {
-    loadAllVerses().then((verses) => {
+    Promise.all([loadAllVerses(), loadAllHadiths()]).then(([verses, hadiths]) => {
       setAllVerses(verses);
-      setContent(getContentForSeed(seed, verses));
+      setAllHadiths(hadiths);
+      setContent(getContentForSeed(seed, verses, hadiths));
     });
   }, []);
 
@@ -44,17 +48,17 @@ export function useHourlyContent() {
       const newSeed = getHourlySeed();
       if (newSeed !== seed) {
         setSeed(newSeed);
-        setContent(getContentForSeed(newSeed, allVerses));
+        setContent(getContentForSeed(newSeed, allVerses, allHadiths));
       }
     }, 60_000);
     return () => clearInterval(interval);
-  }, [seed, allVerses]);
+  }, [seed, allVerses, allHadiths]);
 
   const refresh = useCallback(() => {
     const randomSeed = Math.floor(Math.random() * 999999);
     setSeed(randomSeed);
-    setContent(getContentForSeed(randomSeed, allVerses));
-  }, [allVerses]);
+    setContent(getContentForSeed(randomSeed, allVerses, allHadiths));
+  }, [allVerses, allHadiths]);
 
   return { verse: content.verse, hadith: content.hadith, refresh };
 }
