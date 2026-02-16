@@ -685,12 +685,6 @@ export const hadiths: Hadith[] = [
     book: "Bed'ü'l-Halk, 8"
   },
   {
-    arabic: "مَنْ خَافَ أَدْلَجَ وَمَنْ أَدْلَجَ بَلَغَ الْمَنْزِلَ",
-    turkish: "Kim korkarsa gece yola koyulur; kim gece yola koyulursa konağına varır.",
-    source: "Buhârî",
-    book: "Rikâk"
-  },
-  {
     arabic: "لاَ يَتَمَنَّيَنَّ أَحَدُكُمُ الْمَوْتَ لِضُرٍّ نَزَلَ بِهِ",
     turkish: "Hiçbiriniz başına gelen bir beladan dolayı ölümü temenni etmesin.",
     source: "Buhârî",
@@ -1540,12 +1534,6 @@ export const hadiths: Hadith[] = [
     book: "Rikâk"
   },
   {
-    arabic: "لاَ عَدْوَى وَلاَ طِيَرَةَ وَلاَ هَامَةَ وَلاَ صَفَرَ",
-    turkish: "Hastalığın kendi kendine bulaşması, uğursuzluk ve kötüye yorma yoktur.",
-    source: "Buhârî",
-    book: "Tıbb, 19"
-  },
-  {
     arabic: "لاَ تَسُبُّوا الدَّهْرَ فَإِنَّ اللَّهَ هُوَ الدَّهْرُ",
     turkish: "Zamana sövmeyin; zamanı çeviren Allah'tır.",
     source: "Müslim",
@@ -1783,12 +1771,6 @@ export const hadiths: Hadith[] = [
     turkish: "Hiçbiriniz beni anasından, babasından, çocuğundan ve bütün insanlardan daha çok sevmedikçe iman etmiş olmaz.",
     source: "Buhârî",
     book: "Îmân, 8"
-  },
-  {
-    arabic: "ثَلاَثٌ مَنْ كُنَّ فِيهِ وَجَدَ حَلاَوَةَ الإِيمَانِ",
-    turkish: "Üç şey kimde bulunursa imanın tadını alır: Allah ve Resulünü her şeyden çok sevmek...",
-    source: "Buhârî",
-    book: "Îmân, 9"
   },
   {
     arabic: "مَنْ أَصْبَحَ مِنْكُمْ آمِنًا فِي سِرْبِهِ مُعَافًى فِي جَسَدِهِ عِنْدَهُ قُوتُ يَوْمِهِ فَكَأَنَّمَا حِيزَتْ لَهُ الدُّنْيَا",
