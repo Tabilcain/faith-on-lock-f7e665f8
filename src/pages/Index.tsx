@@ -1,6 +1,8 @@
 import { useHourlyContent } from "@/hooks/useHourlyContent";
-import { RefreshCw, Share2, Moon, Sun, Smartphone } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useFavorites } from "@/hooks/useFavorites";
+import { usePullToRefresh } from "@/hooks/usePullToRefresh";
+import { RefreshCw, Share2, Moon, Sun, Smartphone, Heart, BookmarkCheck } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -8,12 +10,26 @@ import logo from "@/assets/logo.png";
 
 const Index = () => {
   const { verse, hadith, refresh } = useHourlyContent();
+  const { addFavorite, removeFavorite, isFavorite } = useFavorites();
   const [isDark, setIsDark] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [contentKey, setContentKey] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", isDark);
   }, [isDark]);
+
+  const handleRefresh = useCallback(() => {
+    setIsRefreshing(true);
+    refresh();
+    setContentKey((k) => k + 1);
+    setTimeout(() => setIsRefreshing(false), 600);
+  }, [refresh]);
+
+  const { containerRef, pullDistance } = usePullToRefresh({
+    onRefresh: handleRefresh,
+  });
 
   const handleShare = async () => {
     const text = `📖 ${verse.surah} Suresi, ${verse.ayahNumber}. Ayet\n${verse.turkish}\n\n📿 Hadis (${hadith.source})\n${hadith.turkish}`;
@@ -22,33 +38,82 @@ const Index = () => {
         await navigator.share({ title: "Ayet & Hadis", text });
         return;
       }
-
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(text);
         toast({ title: "Metin panoya kopyalandı." });
         return;
       }
-
       throw new Error("Clipboard unavailable");
     } catch (err) {
-      if (err && typeof err === "object" && "name" in err && (err as { name: string }).name === "AbortError") {
-        return;
-      }
+      if (err && typeof err === "object" && "name" in err && (err as { name: string }).name === "AbortError") return;
       if (navigator.clipboard?.writeText) {
         try {
           await navigator.clipboard.writeText(text);
           toast({ title: "Metin panoya kopyalandı." });
           return;
-        } catch {
-          // fall through
-        }
+        } catch { /* fall through */ }
       }
       toast({ title: "Paylaşım başarısız", description: "Metni manuel kopyalayın.", variant: "destructive" });
     }
   };
 
+  const verseId = `verse-${verse.surahNumber}-${verse.ayahNumber}`;
+  const hadithId = `hadith-${hadith.turkish?.slice(0, 30)}`;
+  const verseFav = isFavorite(verseId);
+  const hadithFav = isFavorite(hadithId);
+
+  const toggleVerseFav = () => {
+    if (verseFav) {
+      removeFavorite(verseId);
+      toast({ title: "Ayet kaydedilenlerden çıkarıldı." });
+    } else {
+      addFavorite({
+        id: verseId,
+        type: "verse",
+        text: verse.turkish,
+        source: `${verse.surah} Suresi, ${verse.surahNumber}:${verse.ayahNumber}`,
+        arabic: verse.arabic,
+      });
+      toast({ title: "Ayet kaydedildi ❤️" });
+    }
+  };
+
+  const toggleHadithFav = () => {
+    if (hadithFav) {
+      removeFavorite(hadithId);
+      toast({ title: "Hadis kaydedilenlerden çıkarıldı." });
+    } else {
+      addFavorite({
+        id: hadithId,
+        type: "hadith",
+        text: hadith.turkish,
+        source: `${hadith.source}${hadith.book ? ", " + hadith.book : ""}`,
+        arabic: hadith.arabic,
+      });
+      toast({ title: "Hadis kaydedildi ❤️" });
+    }
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground relative overflow-hidden">
+    <div
+      ref={containerRef}
+      className="min-h-screen flex flex-col bg-background text-foreground relative overflow-y-auto overflow-x-hidden"
+    >
+      {/* Pull-to-refresh indicator */}
+      {pullDistance > 0 && (
+        <div
+          className="absolute top-0 left-0 right-0 flex justify-center z-30 pointer-events-none"
+          style={{ transform: `translateY(${pullDistance - 40}px)`, opacity: Math.min(pullDistance / 80, 1) }}
+        >
+          <div className="bg-primary/10 rounded-full p-2">
+            <RefreshCw
+              className="h-5 w-5 text-primary transition-transform"
+              style={{ transform: `rotate(${pullDistance * 3}deg)` }}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Decorative pattern */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full border-[40px] border-foreground" />
@@ -73,10 +138,10 @@ const Index = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={refresh}
+            onClick={handleRefresh}
             className="h-9 w-9 text-muted-foreground hover:text-foreground"
           >
-            <RefreshCw className="h-4 w-4" />
+            <RefreshCw className={`h-4 w-4 transition-transform duration-500 ${isRefreshing ? "animate-spin" : ""}`} />
           </Button>
           <Button
             variant="ghost"
@@ -86,33 +151,50 @@ const Index = () => {
           >
             <Share2 className="h-4 w-4" />
           </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/favorites")}
+            className="h-9 w-9 text-muted-foreground hover:text-foreground"
+          >
+            <BookmarkCheck className="h-4 w-4" />
+          </Button>
         </div>
       </header>
 
       {/* Content */}
-      <main className="flex-1 flex flex-col gap-6 px-5 py-6 relative z-10">
+      <main
+        key={contentKey}
+        className="flex-1 flex flex-col gap-6 px-5 py-6 relative z-10 animate-fade-in"
+      >
         {/* Verse Card */}
-        <section className="rounded-2xl bg-card p-6 shadow-sm border border-border">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-xs font-semibold uppercase tracking-widest text-primary">Ayet</span>
-            <span className="text-xs text-muted-foreground">
-              {verse.surah} · {verse.ayahNumber}
-            </span>
+        <section className="rounded-2xl bg-card p-6 shadow-sm border border-border relative group">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold uppercase tracking-widest text-primary">Ayet</span>
+              <span className="text-xs text-muted-foreground">
+                {verse.surah} · {verse.ayahNumber}
+              </span>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleVerseFav}
+              className="h-8 w-8"
+            >
+              <Heart
+                className={`h-4 w-4 transition-colors ${verseFav ? "text-red-500 fill-red-500" : "text-muted-foreground"}`}
+              />
+            </Button>
           </div>
 
-          <p
-            className="font-arabic text-2xl leading-[2.2] text-right mb-5"
-            dir="rtl"
-            lang="ar"
-          >
+          <p className="font-arabic text-2xl leading-[2.2] text-right mb-5" dir="rtl" lang="ar">
             {verse.arabic}
           </p>
 
           <div className="h-px bg-border mb-4" />
 
-          <p className="text-base leading-relaxed text-foreground/90">
-            {verse.turkish}
-          </p>
+          <p className="text-base leading-relaxed text-foreground/90">{verse.turkish}</p>
 
           <p className="mt-3 text-xs text-muted-foreground">
             {verse.surah} Suresi, {verse.surahNumber}:{verse.ayahNumber}
@@ -120,30 +202,36 @@ const Index = () => {
         </section>
 
         {/* Hadith Card */}
-        <section className="rounded-2xl bg-card p-6 shadow-sm border border-border">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-xs font-semibold uppercase tracking-widest text-primary">Hadis</span>
-            <span className="inline-flex items-center rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-secondary-foreground">
-              {hadith.source}
-            </span>
+        <section className="rounded-2xl bg-card p-6 shadow-sm border border-border relative group">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold uppercase tracking-widest text-primary">Hadis</span>
+              <span className="inline-flex items-center rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-secondary-foreground">
+                {hadith.source}
+              </span>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleHadithFav}
+              className="h-8 w-8"
+            >
+              <Heart
+                className={`h-4 w-4 transition-colors ${hadithFav ? "text-red-500 fill-red-500" : "text-muted-foreground"}`}
+              />
+            </Button>
           </div>
 
           {hadith.arabic && (
             <>
-              <p
-                className="font-arabic text-xl leading-[2.2] text-right mb-5"
-                dir="rtl"
-                lang="ar"
-              >
+              <p className="font-arabic text-xl leading-[2.2] text-right mb-5" dir="rtl" lang="ar">
                 {hadith.arabic}
               </p>
               <div className="h-px bg-border mb-4" />
             </>
           )}
 
-          <p className="text-base leading-relaxed text-foreground/90">
-            {hadith.turkish}
-          </p>
+          <p className="text-base leading-relaxed text-foreground/90">{hadith.turkish}</p>
 
           {hadith.book && (
             <p className="mt-3 text-xs text-muted-foreground">
