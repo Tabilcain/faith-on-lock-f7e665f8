@@ -1,122 +1,100 @@
 
+# Yayin Oncesi Kapsamli Test ve Denetim Raporu
 
-# 300 Hadis: Elle Secim ve Servis Degisikligi
+## Mevcut Durum Ozeti
 
-## Ozet
+Uygulamanin tum sayfalari (Ana Sayfa, Kaydedilenler, iPhone Kurulum) ve tum butonlari (Dark/Light, Refresh, Share, Favori, Bookmark) test edildi. Asagidaki bulgular tespit edildi:
 
-Mevcut `src/data/hadiths.ts` dosyasindaki 360+ hadisten yaklasik 60 tanesini cikararak 300 kaliteli hadis birakacagiz. Ardindan `hadithService.ts` dosyasini sadece bu kuratorlu veriyi kullanacak sekilde basitlestirip, gereksiz `public/hadiths.json` dosyasini silecegiz.
+---
 
-## Cikarilacak Hadisler
+## 1. Kritik Duzeltmeler (Mutlaka Yapilmali)
 
-### 1. Tekrar eden hadisler (ayni hadis iki kez var)
-- "Insan olunce ameli uc sey disinda kesilir..." (iki yerde)
-- "Musluman dilinden ve elinden..." (iki yerde)
-- "Ademogli midesinden daha kotu bir kap doldurmamistir" (iki yerde)
-- "Bir kadin bir kediyi bagladigi icin cehenneme girdi" (iki yerde)
-- "Kim bir muminin sikintisini giderirse..." (iki yerde)
-- "Kim Musluman kardesinin aybini orterse..." (iki yerde)
-- "Hayra yol gosteren / vesile olan" (iki yerde)
-- "Insanlarin en hayirlisi insanlara en faydali olanidir" (iki yerde)
+### 1.1 Favoriler Sayfasi - Mobilde Silme Butonu Gorunmuyor
+- `Favorites.tsx` dosyasindaki silme butonu `opacity-0 group-hover:opacity-100` kullanarak sadece hover'da gorunuyor
+- Mobilde hover olmadigi icin kullanici favorilerini **asla silemez**
+- **Cozum**: Butonu her zaman gorunur yap veya swipe-to-delete ekle
 
-### 2. Fikih detaylari ve ticaret hukumleri
-- "Alici ile satici birbirlerinden ayrilmadikca muhayyerdirler"
-- "Kim karaborsacilik yaparsa gunahkardir"
-- "Zenginin borcunu geciktirmesi zulumdir"
-- "Muslumanlar sartlarina baglidirlar"
-- "Kim yeminle bir Muslumanin hakkini gasp ederse..."
-- "Kim insanlarin malini odeme niyetiyle alirsa..."
-- "Dogrusozu ve guvenilir tuccar peygamberlerle beraberdir" (ticaret odakli)
-- "Allah alirken de satarken de kolaylik gosteren kisiye rahmet etsin" (ticaret odakli)
+### 1.2 App.css Gereksiz Dosya
+- `src/App.css` Vite varsayilan sablonundan kalan kullanilmayan dosya (logo-spin, .card, .read-the-docs)
+- Hicbir yerde import edilmiyor ama gereksiz yer kapliyor
+- **Cozum**: Dosyayi sil
 
-### 3. Baglamsiz, tartismali veya tek basina anlam ifade etmeyen
-- "Kizma!" (tek kelime)
-- "Islerin bir kadina teslim eden kavim felah bulmaz" (baglam gerektiriyor)
-- "Cihada cikmadan... munafikligin bir subesi" (baglam gerektiriyor)
-- "Benden sonra hilafet otuz yil surecek, sonra saltanat olacaktir" (siyasi tarih)
-- "Insanlara oyle bir zaman gelecek ki kisi mali helalden mi..." (ticaret odakli)
+### 1.3 PWA Meta Tag Uyarisi
+- `apple-mobile-web-app-capable` kullanim disi (deprecated)
+- Konsolda uyari gorunuyor
+- **Cozum**: `index.html` dosyasinda `mobile-web-app-capable` olarak guncelle
 
-### 4. Gunluk adab detaylari (manevi mesaj icermeyen)
-- "Esneyince agzini kapatsin"
-- "Su icerken kabin icine nefes vermesin"
-- "Yatagini silkelesin"
-- "Hapsirik Allah'tandir, esneme seytandandir"
-- "Namazda uyuklarsaniz uyusun"
-- "Beni nasil namaz kilarken gorduyseniz oyle kilin" (teknik talimat)
-- "Kamet getirildiginde farzdan baska namaz kilinmaz" (teknik fikih)
+### 1.4 NotFound Sayfasi Turkce Degil
+- 404 sayfasi "Oops! Page not found" ve "Return to Home" Ingilizce metinler iceriyor
+- Tum uygulama Turkce oldugu icin tutarsiz
+- **Cozum**: Turkce cevirileri ekle
 
-### 5. Hac/umre teknik detaylari
-- "Hac ibadetinizi benden ogrenin" (tek basina mesaj yok)
-- "Kabe'yi tavaf etmek namaz gibidir" (teknik)
-- "Bu Beyt'ten istifade edin; cunku iki kez yikildi..." (eskatoloji detayi)
-- "Hacer-i Esved cennetten inmistir" (bilgi, mesaj degil)
-- "Kurban bayrami gunu Allah'a kan akitmaktan daha sevimli amel yoktur" (baglam gerektirir)
+---
 
-### 6. Bazi ek cikarilacaklar
-- "Mide hastalik evidir, perhiz ilacin basidir" (hadis degil, sozu tartismali)
-- "Bir saat tefekkur bir yillik nafile ibadetten hayirlidir" (zayif hadis)
-- "Hikmet muminin yitigidir" (zayif hadis)
+## 2. Iyilestirmeler (Onerilir)
 
-## Korunacak Kategoriler (~300 hadis)
+### 2.1 Dark Mode Kaliciligi Yok
+- Tema tercihi `useState(false)` ile basliyor, `localStorage`'a kaydedilmiyor
+- Sayfa yenilenince her seferinde acik temaya donuyor
+- **Cozum**: `localStorage` veya `prefers-color-scheme` destegi ekle
 
-- Iman ve tevhid
-- Ahlak ve guzel huy
-- Merhamet, bagislama ve tevbe
-- Dua ve zikir
-- Sabir, sukur ve tevekkul
-- Kuran ve ilim
-- Peygamber ahlaki
-- Komsuculuk ve kardeslik
-- Aile ve cocuk
-- Cennet, ahiret ve olum
-- Doga ve hayvan haklari
-- Selam ve baris
-- Kalp, niyet ve ihlas
-- Gibet, yalan ve haramlar
-- Kader ve ilahi irade
-- Fitne ve son zamanlar (secme olanlar)
-- Namaz ve ibadet (manevi mesaji olanlar)
-- Oruc (manevi yonu)
-- Hac (manevi mesaji olanlar)
+### 2.2 Hadis Listesi Nihai Kontrolu
+- Onceki incelemede belirlenen 3 sorunlu hadis (ID 112, 221, 261) kaldirildi
+- Mevcut liste ~488 hadis iceriyor, temiz durumda
 
-## Teknik Degisiklikler
+### 2.3 hadiths-review.json Gereksiz
+- `public/hadiths-review.json` dosyasi inceleme amacli olusturulmustu, uretimde gereksiz
+- PWA tarafindan onbellege alinacak (`.json` glob pattern'i nedeniyle) ve yer kaplayacak
+- **Cozum**: Dosyayi sil
 
-### 1. `src/data/hadiths.ts`
-- Yukaridaki ~60 hadis cikarilacak
-- Kalan ~300 hadis korunacak
-- Bolum basliklarindaki (comment) numaralar guncellenecek
+### 2.4 Widget Icerik Senkronizasyonu
+- `widgetContent.ts` icindeki hadisler ana `hadiths.ts` listesiyle ayni kaynaktan gelmis ama elle secilmis
+- Silinecek veya degisecek hadisler widget'i etkilemez cunku ayri veri seti
+- Mevcut haliyle sorun yok, ama dikkat edilmeli
 
-### 2. `src/services/hadithService.ts`
-- Tamamen basitlestirilecek
-- `hadiths.json` fetch islemi ve tum regex filtreleri kaldirilacak
-- Dogrudan `src/data/hadiths.ts` verisini dondurecek
+---
 
-```text
-// Yeni hadithService.ts (basitlestirilmis)
-import { hadiths, type Hadith } from "@/data/hadiths";
-export type { Hadith };
+## 3. Guvenlik ve Backend
 
-export async function loadAllHadiths(): Promise<Hadith[]> {
-  return hadiths;
-}
+### 3.1 Veritabani
+- Herhangi bir tablo olusturulmamis, RLS sorunu yok
+- Supabase linter temiz
 
-export function getLoadedHadiths(): Hadith[] {
-  return hadiths;
-}
-```
+### 3.2 Edge Functions
+- `diyanet-quran` ve `export-quran` fonksiyonlari sadece veri cikarma araclari, uretimde kullanilmiyor
+- CORS header'lari `*` (tum kaynaklara acik) - veri cikarma araci oldugu icin kabul edilebilir
+- API anahtarlari (DIYANET_API_KEY) guvenli sekilde secret olarak sakli
 
-### 3. `public/hadiths.json`
-- Silinecek (24MB dosya, artik kullanilmiyor)
-- PWA cache boyutunu azaltacak
+### 3.3 Istemci Tarafi Guvenlik
+- `supabase/client.ts` mevcut ama uygulama tamamen cevrimi disi calisacak sekilde tasarlanmis
+- Hassas veri yok, kullanici kimlik dogrulamasi yok - uygun mimari
 
-### 4. Diger dosyalar
-- `src/hooks/useHourlyContent.ts`: Degisiklik gerekmez (fallback olarak zaten `hadiths.ts`'yi kullaniyor)
-- `src/pages/Index.tsx`: Degisiklik gerekmez (hadith.arabic kontrolu mevcut)
+---
 
-## Sonuc
+## 4. Performans ve PWA
 
-- 300 elle secilmis, manevi/ahlaki odakli hadis
-- Arapca metin destegi (tum hadislerde mevcut)
-- Sifir yazim hatasi, sifir baglamsiz icerik
-- 24MB daha hafif uygulama
-- Regex filtrelerine gerek yok
+### 4.1 PWA Yapilandirmasi
+- `manifest.json`: Dogru yapilandirilmis (standalone, portrait, ikonlar mevcut)
+- Service Worker: VitePWA ile otomatik, `navigateFallbackDenylist` dogru ayarli
+- Cevrimdisi: `quran.json` (~2.3MB) ve tum statik dosyalar onbellege aliniyor
+- `maximumFileSizeToCacheInBytes: 5MB` - yeterli
 
+### 4.2 Veri Boyutlari
+- `quran.json`: ~2.3MB (6236 ayet)
+- `hadiths.ts`: ~1835 satir (~488 hadis, bundle icinde)
+- `widgetContent.ts`: ~60 hadis + 30 ayet (widget icin kucuk alt kume)
+
+---
+
+## Uygulama Plani (Sirali)
+
+| Adim | Gorev | Dosya |
+|------|-------|-------|
+| 1 | Favoriler silme butonunu mobilde gorunur yap | `src/pages/Favorites.tsx` |
+| 2 | Dark mode tercihini `localStorage`'a kaydet | `src/pages/Index.tsx` |
+| 3 | 404 sayfasini Turkceye cevir | `src/pages/NotFound.tsx` |
+| 4 | `apple-mobile-web-app-capable` meta tag'ini guncelle | `index.html` |
+| 5 | Kullanilmayan `App.css` dosyasini sil | `src/App.css` |
+| 6 | `hadiths-review.json` dosyasini sil | `public/hadiths-review.json` |
+
+Toplam 6 dosyada degisiklik/silme islemi yapilacak. Hicbir yeni bagimlilk eklenmeyecek.
