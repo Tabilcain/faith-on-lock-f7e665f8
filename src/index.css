@@ -97,10 +97,84 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Amiri', serif;
+    font-family: "Amiri", serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
   }
 }
 
 .font-arabic {
-  font-family: 'Noto Naskh Arabic', 'Amiri', serif;
+  font-family: "Noto Naskh Arabic", "Amiri", serif;
+}
+
+@layer utilities {
+  .app-surface {
+    background-image:
+      radial-gradient(circle at 18% 8%, hsl(var(--primary) / 0.14), transparent 36%),
+      radial-gradient(circle at 82% 0%, hsl(var(--accent) / 0.18), transparent 38%),
+      radial-gradient(circle at 52% 92%, hsl(var(--secondary) / 0.45), transparent 40%);
+  }
+
+  .app-orb {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(58px);
+    pointer-events: none;
+    opacity: 0.2;
+    animation: float-soft 12s ease-in-out infinite;
+  }
+
+  .glass-panel {
+    background: linear-gradient(
+      152deg,
+      hsl(var(--card) / 0.94) 0%,
+      hsl(var(--card) / 0.82) 100%
+    );
+    border: 1px solid hsl(var(--border) / 0.86);
+    box-shadow:
+      0 14px 36px hsl(var(--foreground) / 0.06),
+      inset 0 1px 0 hsl(0 0% 100% / 0.35);
+    backdrop-filter: blur(12px);
+  }
+
+  .toolbar-shell {
+    background: hsl(var(--card) / 0.8);
+    border: 1px solid hsl(var(--border) / 0.92);
+    box-shadow: 0 8px 24px hsl(var(--foreground) / 0.09);
+    backdrop-filter: blur(10px);
+  }
+
+  .kicker {
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    font-size: 0.69rem;
+    font-weight: 700;
+  }
+
+  .muted-rule {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(var(--border)) 20%,
+      hsl(var(--border)) 80%,
+      transparent 100%
+    );
+  }
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }

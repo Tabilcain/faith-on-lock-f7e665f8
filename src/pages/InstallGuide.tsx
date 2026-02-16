@@ -98,63 +98,73 @@ const InstallGuide = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="app-surface min-h-screen text-foreground relative overflow-x-hidden">
+      <div className="app-orb h-52 w-52 top-[-2rem] left-[-2rem] bg-primary/65" />
+      <div className="app-orb h-44 w-44 bottom-10 right-[-2.5rem] bg-accent/65" />
+
       {/* Header */}
-      <header className="flex items-center gap-3 px-5 pt-6 pb-4 border-b border-border">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate("/")}
-          aria-label="Ana sayfaya dön"
-          className="h-9 w-9"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <h1 className="text-lg font-bold text-primary">iPhone Kurulum</h1>
+      <header className="sticky top-0 z-20 backdrop-blur-sm bg-background/35 border-b border-border/40">
+        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/")}
+            aria-label="Ana sayfaya dön"
+            className="h-9 w-9"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div>
+            <p className="kicker text-primary/80">Kurulum Merkezi</p>
+            <h1 className="text-lg font-bold text-primary leading-none">iPhone Kurulum</h1>
+          </div>
+        </div>
       </header>
 
       {/* Tab Selector */}
-      <div className="flex border-b border-border">
-        <button
-          onClick={() => setActiveTab("pwa")}
-          aria-label="Uygulamayı kur sekmesi"
-          className={`flex-1 py-3 text-sm font-medium text-center transition-colors ${activeTab === "pwa" ? "text-primary border-b-2 border-primary" : "text-muted-foreground"}`}
-        >
-          <Smartphone className="h-4 w-4 inline mr-1.5" />
-          Uygulamayı Kur
-        </button>
-        <button
-          onClick={() => setActiveTab("widget")}
-          aria-label="Widget ekle sekmesi"
-          className={`flex-1 py-3 text-sm font-medium text-center transition-colors ${activeTab === "widget" ? "text-primary border-b-2 border-primary" : "text-muted-foreground"}`}
-        >
-          <Layout className="h-4 w-4 inline mr-1.5" />
-          Widget Ekle
-        </button>
+      <div className="max-w-3xl mx-auto px-4 mt-5 relative z-10">
+        <div className="toolbar-shell rounded-2xl p-1 flex">
+          <button
+            onClick={() => setActiveTab("pwa")}
+            aria-label="Uygulamayı kur sekmesi"
+            className={`flex-1 rounded-xl py-2.5 text-sm font-semibold text-center transition-colors ${activeTab === "pwa" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            <Smartphone className="h-4 w-4 inline mr-1.5" />
+            Uygulamayı Kur
+          </button>
+          <button
+            onClick={() => setActiveTab("widget")}
+            aria-label="Widget ekle sekmesi"
+            className={`flex-1 rounded-xl py-2.5 text-sm font-semibold text-center transition-colors ${activeTab === "widget" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            <Layout className="h-4 w-4 inline mr-1.5" />
+            Widget Ekle
+          </button>
+        </div>
       </div>
 
-      <main className="px-5 py-6 space-y-6 max-w-lg mx-auto">
+      <main className="px-4 py-6 space-y-6 max-w-3xl mx-auto relative z-10">
         {activeTab === "pwa" ? (
           <>
-            <div className="text-center space-y-2">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-2">
+            <div className="glass-panel rounded-3xl p-6 text-center space-y-2">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/15 border border-primary/30 mb-2">
                 <Download className="h-8 w-8 text-primary" />
               </div>
               <h2 className="text-xl font-bold">Ana Ekrana Ekle</h2>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground max-w-xl mx-auto">
                 Bu uygulamayı iPhone'unuza gerçek bir uygulama gibi kurabilirsiniz. Ücretsiz, App Store gerekmez.
               </p>
             </div>
 
-            <div className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2">
               <StepCard step={1} title="Safari ile Açın" description="Bu sayfayı Safari tarayıcısında açın. Chrome veya diğer tarayıcılar desteklemiyor." />
               <StepCard step={2} title="Paylaş Butonuna Basın" description="Ekranın altındaki paylaş butonuna (kutucuktan çıkan ok) dokunun." />
               <StepCard step={3} title="'Ana Ekrana Ekle' Seçin" description="Açılan menüde aşağı kaydırın ve 'Ana Ekrana Ekle' seçeneğine dokunun." />
               <StepCard step={4} title="'Ekle' Onaylayın" description="Sağ üstteki 'Ekle' butonuna basın. Artık uygulama ana ekranınızda!" />
             </div>
 
-            <div className="rounded-xl bg-muted/50 p-4 text-sm text-muted-foreground">
-              <p className="font-medium text-foreground mb-1">✨ Avantajlar</p>
+            <div className="glass-panel rounded-2xl p-4 text-sm text-muted-foreground">
+              <p className="font-medium text-foreground mb-2">Avantajlar</p>
               <ul className="space-y-1 list-disc list-inside">
                 <li>Tam ekran açılır (tarayıcı çubuğu yok)</li>
                 <li>İnternet olmadan da çalışır</li>
@@ -164,17 +174,17 @@ const InstallGuide = () => {
           </>
         ) : (
           <>
-            <div className="text-center space-y-2">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-2">
+            <div className="glass-panel rounded-3xl p-6 text-center space-y-2">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/15 border border-primary/30 mb-2">
                 <Layout className="h-8 w-8 text-primary" />
               </div>
               <h2 className="text-xl font-bold">Widget Kurulumu</h2>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground max-w-xl mx-auto">
                 iPhone ana ekranınıza ayet ve hadis widget'ı ekleyin. Scriptable uygulaması ile çalışır.
               </p>
             </div>
 
-            <div className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2">
               <StepCard
                 step={1}
                 title="Scriptable'ı İndirin"
@@ -200,8 +210,8 @@ const InstallGuide = () => {
             </div>
 
             {/* Code Block */}
-            <div className="rounded-xl border border-border overflow-hidden">
-              <div className="flex items-center justify-between bg-muted px-4 py-2">
+            <div className="glass-panel rounded-2xl overflow-hidden">
+              <div className="flex items-center justify-between bg-background/60 px-4 py-2 border-b border-border/80">
                 <span className="text-xs font-medium text-muted-foreground">Scriptable Kodu</span>
                 <Button
                   variant="ghost"
@@ -214,13 +224,13 @@ const InstallGuide = () => {
                   {copied ? "Kopyalandı!" : "Kopyala"}
                 </Button>
               </div>
-              <pre className="p-4 text-xs overflow-x-auto bg-card max-h-60 overflow-y-auto">
+              <pre className="p-4 text-xs overflow-x-auto bg-card/70 max-h-72 overflow-y-auto">
                 <code>{scriptableCode}</code>
               </pre>
             </div>
 
-            <div className="rounded-xl bg-muted/50 p-4 text-sm text-muted-foreground">
-              <p className="font-medium text-foreground mb-1">💡 İpuçları</p>
+            <div className="glass-panel rounded-2xl p-4 text-sm text-muted-foreground">
+              <p className="font-medium text-foreground mb-2">İpuçları</p>
               <ul className="space-y-1 list-disc list-inside">
                 <li>Widget her saat otomatik güncellenir</li>
                 <li>İnternet gerekmez, veriler scriptin içinde</li>
@@ -236,14 +246,14 @@ const InstallGuide = () => {
 };
 
 const StepCard = ({ step, title, description, action }: { step: number; title: string; description: string; action?: React.ReactNode }) => (
-  <div className="flex gap-4">
-    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
+  <div className="glass-panel rounded-2xl p-4 flex gap-4">
+    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold mt-0.5">
       {step}
     </div>
-    <div className="flex-1">
-      <h3 className="text-sm font-semibold">{title}</h3>
-      <p className="text-sm text-muted-foreground mt-0.5">{description}</p>
-      {action}
+    <div className="flex-1 min-w-0">
+      <h3 className="text-sm font-semibold leading-tight">{title}</h3>
+      <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{description}</p>
+      {action ? <div className="mt-1.5">{action}</div> : null}
     </div>
   </div>
 );

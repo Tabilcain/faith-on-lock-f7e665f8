@@ -11,37 +11,45 @@ const Favorites = () => {
   const hadiths = favorites.filter((f) => f.type === "hadith");
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="flex items-center gap-3 px-5 pt-6 pb-4 border-b border-border">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate("/")}
-          aria-label="Ana sayfaya dön"
-          className="h-9 w-9"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div className="flex items-center gap-2">
-          <Heart className="h-4 w-4 text-primary fill-primary" />
-          <h1 className="text-lg font-bold text-primary">Kaydedilenler</h1>
+    <div className="app-surface min-h-screen text-foreground relative overflow-x-hidden">
+      <div className="app-orb h-44 w-44 top-[-1rem] right-[-2rem] bg-primary/65" />
+      <div className="app-orb h-36 w-36 bottom-16 left-[-2rem] bg-accent/60" />
+
+      <header className="sticky top-0 z-20 backdrop-blur-sm bg-background/35 border-b border-border/40">
+        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/")}
+            aria-label="Ana sayfaya dön"
+            className="h-9 w-9"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div className="flex items-center gap-2">
+            <Heart className="h-4 w-4 text-primary fill-primary" />
+            <h1 className="text-lg font-bold text-primary">Kaydedilenler</h1>
+          </div>
         </div>
       </header>
 
-      <main className="px-5 py-6 max-w-lg mx-auto space-y-6">
+      <main className="px-4 py-6 max-w-3xl mx-auto space-y-6 relative z-10">
         {favorites.length === 0 ? (
-          <div className="text-center py-16 space-y-3">
-            <Heart className="h-12 w-12 mx-auto text-muted-foreground/30" />
+          <div className="glass-panel rounded-3xl text-center py-16 px-6 space-y-3">
+            <Heart className="h-12 w-12 mx-auto text-primary/35" />
             <p className="text-muted-foreground">Henüz kaydettiğiniz bir şey yok.</p>
             <p className="text-sm text-muted-foreground/70">
               Ayet veya hadis kartlarındaki kalp ikonuna basarak kaydedin.
             </p>
+            <Button variant="outline" size="sm" onClick={() => navigate("/")} className="mt-2">
+              Ana sayfaya dön
+            </Button>
           </div>
         ) : (
           <>
             {verses.length > 0 && (
               <section>
-                <h2 className="text-xs font-semibold uppercase tracking-widest text-primary mb-3">
+                <h2 className="kicker text-primary mb-3">
                   Ayetler ({verses.length})
                 </h2>
                 <div className="space-y-3">
@@ -54,7 +62,7 @@ const Favorites = () => {
 
             {hadiths.length > 0 && (
               <section>
-                <h2 className="text-xs font-semibold uppercase tracking-widest text-primary mb-3">
+                <h2 className="kicker text-primary mb-3">
                   Hadisler ({hadiths.length})
                 </h2>
                 <div className="space-y-3">
@@ -78,13 +86,13 @@ const FavoriteCard = ({
   item: { id: string; text: string; source: string; arabic?: string };
   onRemove: (id: string) => void;
 }) => (
-  <div className="rounded-xl bg-card p-4 border border-border relative group">
+  <div className="glass-panel rounded-2xl p-5 relative group">
     {item.arabic && (
-      <p className="font-arabic text-lg leading-[2] text-right mb-3" dir="rtl" lang="ar">
+      <p className="font-arabic text-xl leading-[2] text-right mb-3" dir="rtl" lang="ar">
         {item.arabic}
       </p>
     )}
-    <p className="text-sm leading-relaxed text-foreground/90">{item.text}</p>
+    <p className="text-[1.02rem] leading-relaxed text-foreground/90">{item.text}</p>
     <div className="flex items-center justify-between mt-2">
       <p className="text-xs text-muted-foreground">{item.source}</p>
       <Button
