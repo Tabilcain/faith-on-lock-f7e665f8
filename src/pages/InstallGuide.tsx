@@ -3,6 +3,7 @@ import { ArrowLeft, Download, Smartphone, Layout, Copy, Check, ExternalLink } fr
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { widgetHadiths, widgetVerses, type WidgetHadith, type WidgetVerse } from "@/data/widgetContent";
+import { toast } from "@/hooks/use-toast";
 
 const scriptableCode = buildScriptableCode(widgetHadiths, widgetVerses);
 
@@ -82,16 +83,31 @@ const InstallGuide = () => {
   const [activeTab, setActiveTab] = useState<"pwa" | "widget">("pwa");
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(scriptableCode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(scriptableCode);
+      setCopied(true);
+      toast({ title: "Widget kodu panoya kopyalandı." });
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast({
+        title: "Kopyalama başarısız",
+        description: "Tarayıcı izinlerini kontrol edin veya kodu manuel kopyalayın.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <header className="flex items-center gap-3 px-5 pt-6 pb-4 border-b border-border">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/")} className="h-9 w-9">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate("/")}
+          aria-label="Ana sayfaya dön"
+          className="h-9 w-9"
+        >
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <h1 className="text-lg font-bold text-primary">iPhone Kurulum</h1>
@@ -101,6 +117,7 @@ const InstallGuide = () => {
       <div className="flex border-b border-border">
         <button
           onClick={() => setActiveTab("pwa")}
+          aria-label="Uygulamayı kur sekmesi"
           className={`flex-1 py-3 text-sm font-medium text-center transition-colors ${activeTab === "pwa" ? "text-primary border-b-2 border-primary" : "text-muted-foreground"}`}
         >
           <Smartphone className="h-4 w-4 inline mr-1.5" />
@@ -108,6 +125,7 @@ const InstallGuide = () => {
         </button>
         <button
           onClick={() => setActiveTab("widget")}
+          aria-label="Widget ekle sekmesi"
           className={`flex-1 py-3 text-sm font-medium text-center transition-colors ${activeTab === "widget" ? "text-primary border-b-2 border-primary" : "text-muted-foreground"}`}
         >
           <Layout className="h-4 w-4 inline mr-1.5" />
@@ -189,6 +207,7 @@ const InstallGuide = () => {
                   variant="ghost"
                   size="sm"
                   onClick={handleCopy}
+                  aria-label="Widget kodunu kopyala"
                   className="h-7 text-xs gap-1"
                 >
                   {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}

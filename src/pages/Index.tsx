@@ -8,16 +8,40 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import logo from "@/assets/logo.png";
 
+const THEME_STORAGE_KEY = "ayet-hadis-theme";
+
+function hashString(value: string) {
+  let hash = 0;
+  for (let i = 0; i < value.length; i += 1) {
+    hash = (hash << 5) - hash + value.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash).toString(36);
+}
+
+function getInitialThemePreference() {
+  if (typeof window === "undefined") return false;
+  const saved = localStorage.getItem(THEME_STORAGE_KEY);
+  if (saved === "dark") return true;
+  if (saved === "light") return false;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
 const Index = () => {
   const { verse, hadith, refresh } = useHourlyContent();
   const { addFavorite, removeFavorite, isFavorite } = useFavorites();
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(getInitialThemePreference);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [contentKey, setContentKey] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", isDark);
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, isDark ? "dark" : "light");
+    } catch {
+      // Ignore storage failures in private mode or restricted environments.
+    }
   }, [isDark]);
 
   const handleRefresh = useCallback(() => {
@@ -58,9 +82,10 @@ const Index = () => {
   };
 
   const verseId = `verse-${verse.surahNumber}-${verse.ayahNumber}`;
-  const hadithId = `hadith-${hadith.turkish?.slice(0, 30)}`;
+  const legacyHadithId = `hadith-${hadith.turkish?.slice(0, 30)}`;
+  const hadithId = `hadith-${hashString(`${hadith.source}|${hadith.book ?? ""}|${hadith.turkish ?? ""}`)}`;
   const verseFav = isFavorite(verseId);
-  const hadithFav = isFavorite(hadithId);
+  const hadithFav = isFavorite(hadithId) || isFavorite(legacyHadithId);
 
   const toggleVerseFav = () => {
     if (verseFav) {
@@ -81,6 +106,7 @@ const Index = () => {
   const toggleHadithFav = () => {
     if (hadithFav) {
       removeFavorite(hadithId);
+      removeFavorite(legacyHadithId);
       toast({ title: "Hadis kaydedilenlerden çıkarıldı." });
     } else {
       addFavorite({
@@ -130,7 +156,8 @@ const Index = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setIsDark(!isDark)}
+            onClick={() => setIsDark((prev) => !prev)}
+            aria-label={isDark ? "Aydınlık temaya geç" : "Koyu temaya geç"}
             className="h-9 w-9 text-muted-foreground hover:text-foreground"
           >
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -139,6 +166,7 @@ const Index = () => {
             variant="ghost"
             size="icon"
             onClick={handleRefresh}
+            aria-label="İçeriği yenile"
             className="h-9 w-9 text-muted-foreground hover:text-foreground"
           >
             <RefreshCw className={`h-4 w-4 transition-transform duration-500 ${isRefreshing ? "animate-spin" : ""}`} />
@@ -147,6 +175,7 @@ const Index = () => {
             variant="ghost"
             size="icon"
             onClick={handleShare}
+            aria-label="İçeriği paylaş"
             className="h-9 w-9 text-muted-foreground hover:text-foreground"
           >
             <Share2 className="h-4 w-4" />
@@ -155,6 +184,7 @@ const Index = () => {
             variant="ghost"
             size="icon"
             onClick={() => navigate("/favorites")}
+            aria-label="Kaydedilenlere git"
             className="h-9 w-9 text-muted-foreground hover:text-foreground"
           >
             <BookmarkCheck className="h-4 w-4" />
@@ -180,6 +210,7 @@ const Index = () => {
               variant="ghost"
               size="icon"
               onClick={toggleVerseFav}
+              aria-label={verseFav ? "Ayeti kayıttan çıkar" : "Ayeti kaydet"}
               className="h-8 w-8"
             >
               <Heart
@@ -214,6 +245,7 @@ const Index = () => {
               variant="ghost"
               size="icon"
               onClick={toggleHadithFav}
+              aria-label={hadithFav ? "Hadisi kayıttan çıkar" : "Hadisi kaydet"}
               className="h-8 w-8"
             >
               <Heart

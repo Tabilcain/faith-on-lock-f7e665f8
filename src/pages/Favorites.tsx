@@ -13,7 +13,13 @@ const Favorites = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="flex items-center gap-3 px-5 pt-6 pb-4 border-b border-border">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/")} className="h-9 w-9">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate("/")}
+          aria-label="Ana sayfaya dön"
+          className="h-9 w-9"
+        >
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="flex items-center gap-2">
@@ -83,11 +89,13 @@ const FavoriteCard = ({
       <p className="text-xs text-muted-foreground">{item.source}</p>
       <Button
         variant="ghost"
-        size="icon"
+        size="sm"
         onClick={() => onRemove(item.id)}
-        className="h-7 w-7 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+        aria-label="Kaydı sil"
+        className="h-8 px-2 text-muted-foreground hover:text-destructive opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
       >
-        <Trash2 className="h-3.5 w-3.5" />
+        <Trash2 className="h-3.5 w-3.5 mr-1" />
+        <span className="text-xs">Sil</span>
       </Button>
     </div>
   </div>

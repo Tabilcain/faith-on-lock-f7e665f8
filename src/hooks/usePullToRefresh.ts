@@ -11,6 +11,7 @@ export function usePullToRefresh({ onRefresh, threshold = 80 }: Options) {
   const [pullDistance, setPullDistance] = useState(0);
   const startY = useRef(0);
   const isPulling = useRef(false);
+  const pullDistanceRef = useRef(0);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -29,16 +30,18 @@ export function usePullToRefresh({ onRefresh, threshold = 80 }: Options) {
       if (diff > 0) {
         e.preventDefault();
         const distance = Math.min(diff * 0.5, threshold * 1.5);
+        pullDistanceRef.current = distance;
         setPullDistance(distance);
         setPulling(true);
       }
     };
 
     const handleTouchEnd = () => {
-      if (pullDistance >= threshold) {
+      if (pullDistanceRef.current >= threshold) {
         onRefresh();
       }
       isPulling.current = false;
+      pullDistanceRef.current = 0;
       setPulling(false);
       setPullDistance(0);
     };
@@ -52,7 +55,7 @@ export function usePullToRefresh({ onRefresh, threshold = 80 }: Options) {
       el.removeEventListener("touchmove", handleTouchMove);
       el.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [onRefresh, threshold, pullDistance]);
+  }, [onRefresh, threshold]);
 
   return { containerRef, pulling, pullDistance };
 }

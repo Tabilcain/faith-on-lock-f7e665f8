@@ -1,12 +1,12 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @import "@fontsource/amiri/400.css";
 @import "@fontsource/amiri/400-italic.css";
 @import "@fontsource/amiri/700.css";
 @import "@fontsource/noto-naskh-arabic/400.css";
 @import "@fontsource/noto-naskh-arabic/700.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   :root {
